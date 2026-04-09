@@ -1,0 +1,56 @@
+# Neo Trust Ledger — read at session start, always.
+# Controls Neo's autonomy level and permissions.
+
+version: 1
+phase: 1  # 1=co-creation, 2=propose+approve, 3=graduated
+
+# Phase graduation criteria:
+# 1→2: >80% prediction accuracy across 3 consecutive domains
+# 2→3: Ontologies pass validation without correction on first attempt
+# PERMANENT: New domain commitments + meta-reasoning changes always need human sign-off
+
+autonomous:
+  - create_workspace_structure
+  - discover_and_catalog_sources
+  - propose_draft_rules
+  - save_episodic_memory
+  - run_qa_loop
+  - generate_visualizations
+  - auto_detect_knowledge_type
+  - fix_coverage_gaps_from_existing_sources
+  - run_held_out_prediction_test
+  - log_iterations
+
+requires_approval:
+  - add_new_entity_types
+  - promote_draft_rules_to_active
+  - modify_skill_file
+  - generate_domain_agent_skill
+  - restructure_existing_ontology
+  - acquire_new_sources
+  - graduate_meta_rules
+  - change_drea_parameters
+
+qa_mode: supervised  # autonomous | supervised | mandatory-review
+# autonomous: auto-approve if all 3 reviewers pass. User sees report after.
+# supervised: user reviews report before finalization.
+# mandatory-review: user approves each finding individually.
+
+domains_completed: 0
+domains_list: []
+last_review: null
+
+default_knowledge_mode: proprietary  # fallback when auto-detect uncertain
+max_autonomous_iterations: 5  # Phase 1: ignored (1 at a time). Phase 2: this. Phase 3: unlimited.
+
+# Iteration loop behavior per phase:
+# Phase 1: Loop DISABLED. One change at a time, user approves.
+# Phase 2: Runs up to max_autonomous_iterations. Shows log to user.
+# Phase 3: NEVER STOP. Runs until user interrupts or context limit (80%).
+
+# Plateau detection:
+plateau_threshold: 10  # consecutive reverts before pausing
+diminishing_returns_threshold: 2  # % improvement below which to stop
+
+# Deprecation sweep interval:
+deprecation_sweep_interval: 10  # every N domains, audit graduated rules
