@@ -1,0 +1,24 @@
+vision:
+  primary: gemini
+  fallback: claude
+  gemini_model: gemini-2.0-flash
+  claude_model: claude-sonnet-4-20250514
+  confidence_threshold: 0.7
+
+rules:
+  path: workspaces/finance-and-banking/ontology/rules/fraud-detection-rules.yaml
+
+scoring:
+  critical_base: 70
+  critical_additional: 10
+  warning_weight: 10
+  info_weight: 3
+  thresholds:
+    clean: 30
+    review: 60
+
+output:
+  formats:
+    - json
+    - markdown
+    - graph

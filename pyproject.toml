@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=68.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "neo-fraud-pipeline"
+version = "0.1.0"
+description = "Autonomous fraud detection for Vietnamese bank statement verification"
+requires-python = ">=3.11"
+dependencies = [
+    "anthropic>=0.40.0",
+    "google-genai>=1.0.0",
+    "PyMuPDF>=1.24.0",
+    "fastapi>=0.115.0",
+    "uvicorn>=0.32.0",
+    "pyyaml>=6.0",
+    "graphifyy>=0.1.0",
+    "pydantic>=2.0",
+    "python-multipart",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8.0", "pytest-asyncio>=0.24.0"]
+
+[tool.setuptools.packages.find]
+include = ["pipeline*"]
+
+[project.scripts]
+neo-fraud = "pipeline.cli:main"
