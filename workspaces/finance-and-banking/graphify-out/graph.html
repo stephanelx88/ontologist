@@ -1,0 +1,242 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>graphify - graphify-out/graph.html</title>
+<script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: #0f0f1a; color: #e0e0e0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; display: flex; height: 100vh; overflow: hidden; }
+  #graph { flex: 1; }
+  #sidebar { width: 280px; background: #1a1a2e; border-left: 1px solid #2a2a4e; display: flex; flex-direction: column; overflow: hidden; }
+  #search-wrap { padding: 12px; border-bottom: 1px solid #2a2a4e; }
+  #search { width: 100%; background: #0f0f1a; border: 1px solid #3a3a5e; color: #e0e0e0; padding: 7px 10px; border-radius: 6px; font-size: 13px; outline: none; }
+  #search:focus { border-color: #4E79A7; }
+  #search-results { max-height: 140px; overflow-y: auto; padding: 4px 12px; border-bottom: 1px solid #2a2a4e; display: none; }
+  .search-item { padding: 4px 6px; cursor: pointer; border-radius: 4px; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .search-item:hover { background: #2a2a4e; }
+  #info-panel { padding: 14px; border-bottom: 1px solid #2a2a4e; min-height: 140px; }
+  #info-panel h3 { font-size: 13px; color: #aaa; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+  #info-content { font-size: 13px; color: #ccc; line-height: 1.6; }
+  #info-content .field { margin-bottom: 5px; }
+  #info-content .field b { color: #e0e0e0; }
+  #info-content .empty { color: #555; font-style: italic; }
+  .neighbor-link { display: block; padding: 2px 6px; margin: 2px 0; border-radius: 3px; cursor: pointer; font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; border-left: 3px solid #333; }
+  .neighbor-link:hover { background: #2a2a4e; }
+  #neighbors-list { max-height: 160px; overflow-y: auto; margin-top: 4px; }
+  #legend-wrap { flex: 1; overflow-y: auto; padding: 12px; }
+  #legend-wrap h3 { font-size: 13px; color: #aaa; margin-bottom: 10px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .legend-item { display: flex; align-items: center; gap: 8px; padding: 4px 0; cursor: pointer; border-radius: 4px; font-size: 12px; }
+  .legend-item:hover { background: #2a2a4e; padding-left: 4px; }
+  .legend-item.dimmed { opacity: 0.35; }
+  .legend-dot { width: 12px; height: 12px; border-radius: 50%; flex-shrink: 0; }
+  .legend-label { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .legend-count { color: #666; font-size: 11px; }
+  #stats { padding: 10px 14px; border-top: 1px solid #2a2a4e; font-size: 11px; color: #555; }
+</style>
+</head>
+<body>
+<div id="graph"></div>
+<div id="sidebar">
+  <div id="search-wrap">
+    <input id="search" type="text" placeholder="Search nodes..." autocomplete="off">
+    <div id="search-results"></div>
+  </div>
+  <div id="info-panel">
+    <h3>Node Info</h3>
+    <div id="info-content"><span class="empty">Click a node to inspect it</span></div>
+  </div>
+  <div id="legend-wrap">
+    <h3>Communities</h3>
+    <div id="legend"></div>
+  </div>
+  <div id="stats">51 nodes &middot; 62 edges &middot; 7 communities</div>
+</div>
+<script>
+const RAW_NODES = [{"id": "claude_md_workspace", "label": "Finance and Banking Neo Workspace", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 17.5, "font": {"size": 12, "color": "#ffffff"}, "title": "Finance and Banking Neo Workspace", "community": 1, "community_name": "COSTAR Architecture", "source_file": "CLAUDE.md", "file_type": "document", "degree": 4}, {"id": "claude_md_costar_architecture", "label": "COSTAR Cognitive Architecture", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "COSTAR Cognitive Architecture", "community": 1, "community_name": "COSTAR Architecture", "source_file": "CLAUDE.md", "file_type": "document", "degree": 1}, {"id": "agents_md_agents_registry", "label": "Agents Registry", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Agents Registry", "community": 1, "community_name": "COSTAR Architecture", "source_file": "agents/AGENTS.md", "file_type": "document", "degree": 1}, {"id": "agents_md_neo_architect", "label": "Neo.Architect", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "Neo.Architect", "community": 1, "community_name": "COSTAR Architecture", "source_file": "agents/AGENTS.md", "file_type": "document", "degree": 2}, {"id": "agents_md_costar_co", "label": "COSTAR CO - Curate and Organize", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "COSTAR CO - Curate and Organize", "community": 1, "community_name": "COSTAR Architecture", "source_file": "agents/AGENTS.md", "file_type": "document", "degree": 2}, {"id": "agents_md_costar_star", "label": "COSTAR STAR - See Think Act Reflect", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "COSTAR STAR - See Think Act Reflect", "community": 1, "community_name": "COSTAR Architecture", "source_file": "agents/AGENTS.md", "file_type": "document", "degree": 2}, {"id": "agent_md_fraud_detector", "label": "Fraud Detector Agent", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 28.8, "font": {"size": 12, "color": "#ffffff"}, "title": "Fraud Detector Agent", "community": 3, "community_name": "Fraud Detection Agent", "source_file": "agents/fraud-detector/AGENT.md", "file_type": "document", "degree": 10}, {"id": "agent_md_fraud_assessment_output", "label": "Fraud Assessment Output Format", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Fraud Assessment Output Format", "community": 3, "community_name": "Fraud Detection Agent", "source_file": "agents/fraud-detector/AGENT.md", "file_type": "document", "degree": 1}, {"id": "agent_md_risk_classification", "label": "Risk Classification (CLEAN/REVIEW/SUSPICIOUS)", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 15.6, "font": {"size": 12, "color": "#ffffff"}, "title": "Risk Classification (CLEAN/REVIEW/SUSPICIOUS)", "community": 3, "community_name": "Fraud Detection Agent", "source_file": "agents/fraud-detector/AGENT.md", "file_type": "document", "degree": 3}, {"id": "core_workflow_standard_verification", "label": "Standard Package Verification Scenario", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "Standard Package Verification Scenario", "community": 3, "community_name": "Fraud Detection Agent", "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md", "file_type": "document", "degree": 2}, {"id": "core_workflow_name_mismatch", "label": "Name Mismatch Detection Scenario", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "Name Mismatch Detection Scenario", "community": 2, "community_name": "Source Data & Packages", "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md", "file_type": "document", "degree": 2}, {"id": "core_workflow_timestamp_manipulation", "label": "Timestamp Manipulation Scenario", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Timestamp Manipulation Scenario", "community": 6, "community_name": "Timestamp Rules", "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md", "file_type": "document", "degree": 1}, {"id": "ontology_md_ontology", "label": "Finance and Banking Ontology", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 25.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Finance and Banking Ontology", "community": 1, "community_name": "COSTAR Architecture", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 8}, {"id": "ontology_md_loan_application_package", "label": "Loan Application Package Entity", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 15.6, "font": {"size": 12, "color": "#ffffff"}, "title": "Loan Application Package Entity", "community": 4, "community_name": "Domain Entity Model", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 3}, {"id": "ontology_md_applicant", "label": "Applicant Entity", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 19.4, "font": {"size": 12, "color": "#ffffff"}, "title": "Applicant Entity", "community": 4, "community_name": "Domain Entity Model", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 5}, {"id": "ontology_md_bank_account", "label": "Bank Account Entity", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 15.6, "font": {"size": 12, "color": "#ffffff"}, "title": "Bank Account Entity", "community": 4, "community_name": "Domain Entity Model", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 3}, {"id": "ontology_md_transaction", "label": "Transaction Entity", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Transaction Entity", "community": 4, "community_name": "Domain Entity Model", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 1}, {"id": "ontology_md_salary_transaction", "label": "Salary Transaction Entity", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "Salary Transaction Entity", "community": 4, "community_name": "Domain Entity Model", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 2}, {"id": "ontology_md_vpbank_employee", "label": "VPBank Employee Entity", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 17.5, "font": {"size": 12, "color": "#ffffff"}, "title": "VPBank Employee Entity", "community": 4, "community_name": "Domain Entity Model", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 4}, {"id": "ontology_md_verification_photo", "label": "Verification Photo Entity", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "Verification Photo Entity", "community": 4, "community_name": "Domain Entity Model", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 2}, {"id": "ontology_md_bank_application_form", "label": "Bank Application Form Entity", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Bank Application Form Entity", "community": 5, "community_name": "Form Extraction Gap", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 1}, {"id": "ontology_md_employer", "label": "Employer Entity", "color": {"background": "#59A14F", "border": "#59A14F", "highlight": {"background": "#ffffff", "border": "#59A14F"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "Employer Entity", "community": 4, "community_name": "Domain Entity Model", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 2}, {"id": "inventory_md_package1", "label": "MBBank Loan Package 1 (LN2501104785157)", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 17.5, "font": {"size": 12, "color": "#ffffff"}, "title": "MBBank Loan Package 1 (LN2501104785157)", "community": 2, "community_name": "Source Data & Packages", "source_file": "ontology/INVENTORY.md", "file_type": "document", "degree": 4}, {"id": "inventory_md_package2", "label": "MBBank Loan Package 2 (LN2501134790716)", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 17.5, "font": {"size": 12, "color": "#ffffff"}, "title": "MBBank Loan Package 2 (LN2501134790716)", "community": 2, "community_name": "Source Data & Packages", "source_file": "ontology/INVENTORY.md", "file_type": "document", "degree": 4}, {"id": "gaps_md_photo_manipulation", "label": "Gap: Photo Manipulation Detection Rules", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 15.6, "font": {"size": 12, "color": "#ffffff"}, "title": "Gap: Photo Manipulation Detection Rules", "community": 3, "community_name": "Fraud Detection Agent", "source_file": "ontology/docs/gaps.md", "file_type": "document", "degree": 3}, {"id": "gaps_md_device_reuse", "label": "Gap: Cross-Applicant Device Reuse Detection", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Gap: Cross-Applicant Device Reuse Detection", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/docs/gaps.md", "file_type": "document", "degree": 1}, {"id": "gaps_md_employee_volume", "label": "Gap: VPBank Employee Volume Thresholds", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Gap: VPBank Employee Volume Thresholds", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/docs/gaps.md", "file_type": "document", "degree": 1}, {"id": "gaps_md_other_banks", "label": "Gap: Other Bank App Layouts", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Gap: Other Bank App Layouts", "community": 1, "community_name": "COSTAR Architecture", "source_file": "ontology/docs/gaps.md", "file_type": "document", "degree": 1}, {"id": "gaps_md_form_extraction", "label": "Gap: Loan Application Form Field Extraction", "color": {"background": "#EDC948", "border": "#EDC948", "highlight": {"background": "#ffffff", "border": "#EDC948"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Gap: Loan Application Form Field Extraction", "community": 5, "community_name": "Form Extraction Gap", "source_file": "ontology/docs/gaps.md", "file_type": "document", "degree": 1}, {"id": "learn_and_update_skill", "label": "Skill: Learn and Update", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 15.6, "font": {"size": 12, "color": "#ffffff"}, "title": "Skill: Learn and Update", "community": 3, "community_name": "Fraud Detection Agent", "source_file": "ontology/skills/learn-and-update.md", "file_type": "document", "degree": 3}, {"id": "verify_bank_statement_skill", "label": "Skill: Verify Bank Statement Package", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 40.0, "font": {"size": 12, "color": "#ffffff"}, "title": "Skill: Verify Bank Statement Package", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 16}, {"id": "verify_bs_badge_present_check", "label": "Rule: badge-present-check", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: badge-present-check", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 1}, {"id": "verify_bs_employee_consistency", "label": "Rule: employee-consistency-check", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: employee-consistency-check", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 1}, {"id": "verify_bs_name_mismatch", "label": "Rule: name-mismatch-check", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: name-mismatch-check", "community": 2, "community_name": "Source Data & Packages", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 2}, {"id": "verify_bs_balance_consistency", "label": "Rule: balance-consistency-check", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: balance-consistency-check", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 1}, {"id": "verify_bs_timestamp_sequence", "label": "Rule: photo-timestamp-sequence", "color": {"background": "#B07AA1", "border": "#B07AA1", "highlight": {"background": "#ffffff", "border": "#B07AA1"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: photo-timestamp-sequence", "community": 6, "community_name": "Timestamp Rules", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 2}, {"id": "verify_bs_screenshot_date", "label": "Rule: screenshot-date-vs-photo-date", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: screenshot-date-vs-photo-date", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 1}, {"id": "verify_bs_salary_format", "label": "Rule: salary-description-format", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: salary-description-format", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 1}, {"id": "verify_bs_salary_regularity", "label": "Rule: salary-regularity-check", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: salary-regularity-check", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 1}, {"id": "verify_bs_round_number", "label": "Rule: round-number-deposit", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: round-number-deposit", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 1}, {"id": "verify_bs_balance_salary_ratio", "label": "Rule: balance-vs-salary-ratio", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rule: balance-vs-salary-ratio", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "ontology/skills/verify-bank-statement.md", "file_type": "document", "degree": 1}, {"id": "sources_md_mbbank", "label": "MBBank Mobile App Loan Verification Source", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "MBBank Mobile App Loan Verification Source", "community": 2, "community_name": "Source Data & Packages", "source_file": "sources/mbbank-loan-packages.md", "file_type": "document", "degree": 2}, {"id": "sources_md_le_thi_phuong", "label": "Applicant: Le Thi Phuong (Package 1)", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "Applicant: Le Thi Phuong (Package 1)", "community": 2, "community_name": "Source Data & Packages", "source_file": "sources/mbbank-loan-packages.md", "file_type": "document", "degree": 2}, {"id": "sources_md_nguyen_bich_hanh", "label": "Applicant: Nguyen Bich Hanh (Package 2)", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 15.6, "font": {"size": 12, "color": "#ffffff"}, "title": "Applicant: Nguyen Bich Hanh (Package 2)", "community": 2, "community_name": "Source Data & Packages", "source_file": "sources/mbbank-loan-packages.md", "file_type": "document", "degree": 3}, {"id": "sources_md_doan_thuy_hang", "label": "VPBank Employee: Doan Thuy Hang (ID 42589)", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "VPBank Employee: Doan Thuy Hang (ID 42589)", "community": 2, "community_name": "Source Data & Packages", "source_file": "sources/mbbank-loan-packages.md", "file_type": "document", "degree": 2}, {"id": "sources_md_nguyen_tuyet_mai", "label": "VPBank Employee: Nguyen Tuyet Mai (ID 47223)", "color": {"background": "#E15759", "border": "#E15759", "highlight": {"background": "#ffffff", "border": "#E15759"}}, "size": 13.8, "font": {"size": 0, "color": "#ffffff"}, "title": "VPBank Employee: Nguyen Tuyet Mai (ID 47223)", "community": 2, "community_name": "Source Data & Packages", "source_file": "sources/mbbank-loan-packages.md", "file_type": "document", "degree": 2}, {"id": "sources_md_vpbank_verification_procedure", "label": "VPBank Verification Procedure", "color": {"background": "#4E79A7", "border": "#4E79A7", "highlight": {"background": "#ffffff", "border": "#4E79A7"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "VPBank Verification Procedure", "community": 0, "community_name": "Verification Skills & Gaps", "source_file": "sources/mbbank-loan-packages.md", "file_type": "document", "degree": 1}, {"id": "qa_report_status", "label": "QA Report - No Review Yet", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "QA Report - No Review Yet", "community": 1, "community_name": "COSTAR Architecture", "source_file": "QA_REPORT.md", "file_type": "document", "degree": 1}, {"id": "ontology_md_epistemic_draft", "label": "Rationale: Epistemic Status Draft", "color": {"background": "#F28E2B", "border": "#F28E2B", "highlight": {"background": "#ffffff", "border": "#F28E2B"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rationale: Epistemic Status Draft", "community": 1, "community_name": "COSTAR Architecture", "source_file": "ontology/ONTOLOGY.md", "file_type": "document", "degree": 1}, {"id": "agent_md_rationale_minimize_false_positives", "label": "Rationale: Minimize False Positives", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rationale: Minimize False Positives", "community": 3, "community_name": "Fraud Detection Agent", "source_file": "agents/fraud-detector/AGENT.md", "file_type": "document", "degree": 1}, {"id": "agent_md_rationale_out_of_scope", "label": "Rationale: Out of Scope Boundaries", "color": {"background": "#76B7B2", "border": "#76B7B2", "highlight": {"background": "#ffffff", "border": "#76B7B2"}}, "size": 11.9, "font": {"size": 0, "color": "#ffffff"}, "title": "Rationale: Out of Scope Boundaries", "community": 3, "community_name": "Fraud Detection Agent", "source_file": "agents/fraud-detector/AGENT.md", "file_type": "document", "degree": 1}];
+const RAW_EDGES = [{"from": "claude_md_workspace", "to": "agents_md_agents_registry", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "claude_md_workspace", "to": "ontology_md_ontology", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "claude_md_workspace", "to": "qa_report_status", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "claude_md_workspace", "to": "claude_md_costar_architecture", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agents_md_neo_architect", "to": "agents_md_costar_co", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agents_md_neo_architect", "to": "ontology_md_ontology", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agents_md_costar_co", "to": "agents_md_costar_star", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agents_md_costar_star", "to": "agent_md_fraud_detector", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_fraud_detector", "to": "ontology_md_ontology", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_fraud_detector", "to": "learn_and_update_skill", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_fraud_detector", "to": "gaps_md_photo_manipulation", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_fraud_detector", "to": "verify_bank_statement_skill", "label": "references", "title": "references [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "agent_md_fraud_detector", "to": "agent_md_risk_classification", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_fraud_detector", "to": "agent_md_fraud_assessment_output", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_fraud_detector", "to": "agent_md_rationale_minimize_false_positives", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_fraud_detector", "to": "agent_md_rationale_out_of_scope", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_fraud_detector", "to": "core_workflow_standard_verification", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_risk_classification", "to": "core_workflow_standard_verification", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "agent_md_risk_classification", "to": "verify_bank_statement_skill", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "core_workflow_name_mismatch", "to": "verify_bs_name_mismatch", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "core_workflow_name_mismatch", "to": "sources_md_nguyen_bich_hanh", "label": "semantically_similar_to", "title": "semantically_similar_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "core_workflow_timestamp_manipulation", "to": "verify_bs_timestamp_sequence", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_ontology", "to": "inventory_md_package1", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_ontology", "to": "inventory_md_package2", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_ontology", "to": "gaps_md_photo_manipulation", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_ontology", "to": "ontology_md_epistemic_draft", "label": "rationale_for", "title": "rationale_for [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_ontology", "to": "gaps_md_other_banks", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_loan_application_package", "to": "ontology_md_applicant", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_loan_application_package", "to": "ontology_md_vpbank_employee", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_loan_application_package", "to": "ontology_md_salary_transaction", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_applicant", "to": "ontology_md_bank_account", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_applicant", "to": "ontology_md_employer", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_applicant", "to": "sources_md_le_thi_phuong", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "ontology_md_applicant", "to": "sources_md_nguyen_bich_hanh", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "ontology_md_bank_account", "to": "ontology_md_transaction", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_bank_account", "to": "ontology_md_verification_photo", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_salary_transaction", "to": "ontology_md_employer", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_vpbank_employee", "to": "ontology_md_verification_photo", "label": "conceptually_related_to", "title": "conceptually_related_to [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "ontology_md_vpbank_employee", "to": "sources_md_doan_thuy_hang", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "ontology_md_vpbank_employee", "to": "sources_md_nguyen_tuyet_mai", "label": "implements", "title": "implements [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "ontology_md_bank_application_form", "to": "gaps_md_form_extraction", "label": "conceptually_related_to", "title": "conceptually_related_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "inventory_md_package1", "to": "sources_md_le_thi_phuong", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "inventory_md_package1", "to": "sources_md_doan_thuy_hang", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "inventory_md_package1", "to": "sources_md_mbbank", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "inventory_md_package2", "to": "sources_md_nguyen_bich_hanh", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "inventory_md_package2", "to": "sources_md_nguyen_tuyet_mai", "label": "shares_data_with", "title": "shares_data_with [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "inventory_md_package2", "to": "sources_md_mbbank", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "gaps_md_photo_manipulation", "to": "learn_and_update_skill", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "gaps_md_device_reuse", "to": "verify_bank_statement_skill", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "gaps_md_employee_volume", "to": "verify_bank_statement_skill", "label": "references", "title": "references [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "learn_and_update_skill", "to": "verify_bank_statement_skill", "label": "semantically_similar_to", "title": "semantically_similar_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "verify_bank_statement_skill", "to": "sources_md_vpbank_verification_procedure", "label": "semantically_similar_to", "title": "semantically_similar_to [INFERRED]", "dashes": true, "width": 1, "color": {"opacity": 0.35}, "confidence": "INFERRED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_badge_present_check", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_employee_consistency", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_name_mismatch", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_balance_consistency", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_timestamp_sequence", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_screenshot_date", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_salary_format", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_salary_regularity", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_round_number", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}, {"from": "verify_bank_statement_skill", "to": "verify_bs_balance_salary_ratio", "label": "implements", "title": "implements [EXTRACTED]", "dashes": false, "width": 2, "color": {"opacity": 0.7}, "confidence": "EXTRACTED"}];
+const LEGEND = [{"cid": 0, "color": "#4E79A7", "label": "Verification Skills &amp; Gaps", "count": 12}, {"cid": 1, "color": "#F28E2B", "label": "COSTAR Architecture", "count": 10}, {"cid": 2, "color": "#E15759", "label": "Source Data &amp; Packages", "count": 9}, {"cid": 3, "color": "#76B7B2", "label": "Fraud Detection Agent", "count": 8}, {"cid": 4, "color": "#59A14F", "label": "Domain Entity Model", "count": 8}, {"cid": 5, "color": "#EDC948", "label": "Form Extraction Gap", "count": 2}, {"cid": 6, "color": "#B07AA1", "label": "Timestamp Rules", "count": 2}];
+
+// Build vis datasets
+const nodesDS = new vis.DataSet(RAW_NODES.map(n => ({
+  id: n.id, label: n.label, color: n.color, size: n.size,
+  font: n.font, title: n.title,
+  _community: n.community, _community_name: n.community_name,
+  _source_file: n.source_file, _file_type: n.file_type, _degree: n.degree,
+})));
+
+const edgesDS = new vis.DataSet(RAW_EDGES.map((e, i) => ({
+  id: i, from: e.from, to: e.to,
+  label: '',
+  title: e.title,
+  dashes: e.dashes,
+  width: e.width,
+  color: e.color,
+  arrows: { to: { enabled: true, scaleFactor: 0.5 } },
+})));
+
+const container = document.getElementById('graph');
+const network = new vis.Network(container, { nodes: nodesDS, edges: edgesDS }, {
+  physics: {
+    enabled: true,
+    solver: 'forceAtlas2Based',
+    forceAtlas2Based: {
+      gravitationalConstant: -60,
+      centralGravity: 0.005,
+      springLength: 120,
+      springConstant: 0.08,
+      damping: 0.4,
+      avoidOverlap: 0.8,
+    },
+    stabilization: { iterations: 200, fit: true },
+  },
+  interaction: {
+    hover: true,
+    tooltipDelay: 100,
+    hideEdgesOnDrag: true,
+    navigationButtons: false,
+    keyboard: false,
+  },
+  nodes: { shape: 'dot', borderWidth: 1.5 },
+  edges: { smooth: { type: 'continuous', roundness: 0.2 }, selectionWidth: 3 },
+});
+
+network.once('stabilizationIterationsDone', () => {
+  network.setOptions({ physics: { enabled: false } });
+});
+
+function showInfo(nodeId) {
+  const n = nodesDS.get(nodeId);
+  if (!n) return;
+  const neighborIds = network.getConnectedNodes(nodeId);
+  const neighborItems = neighborIds.map(nid => {
+    const nb = nodesDS.get(nid);
+    const color = nb ? nb.color.background : '#555';
+    return `<span class="neighbor-link" style="border-left-color:${color}" onclick="focusNode('${nid}')">${nb ? nb.label : nid}</span>`;
+  }).join('');
+  document.getElementById('info-content').innerHTML = `
+    <div class="field"><b>${n.label}</b></div>
+    <div class="field">Type: ${n._file_type || 'unknown'}</div>
+    <div class="field">Community: ${n._community_name}</div>
+    <div class="field">Source: ${n._source_file || '-'}</div>
+    <div class="field">Degree: ${n._degree}</div>
+    ${neighborIds.length ? `<div class="field" style="margin-top:8px;color:#aaa;font-size:11px">Neighbors (${neighborIds.length})</div><div id="neighbors-list">${neighborItems}</div>` : ''}
+  `;
+}
+
+function focusNode(nodeId) {
+  network.focus(nodeId, { scale: 1.4, animation: true });
+  network.selectNodes([nodeId]);
+  showInfo(nodeId);
+}
+
+network.on('click', params => {
+  if (params.nodes.length > 0) showInfo(params.nodes[0]);
+  else document.getElementById('info-content').innerHTML = '<span class="empty">Click a node to inspect it</span>';
+});
+
+const searchInput = document.getElementById('search');
+const searchResults = document.getElementById('search-results');
+searchInput.addEventListener('input', () => {
+  const q = searchInput.value.toLowerCase().trim();
+  searchResults.innerHTML = '';
+  if (!q) { searchResults.style.display = 'none'; return; }
+  const matches = RAW_NODES.filter(n => n.label.toLowerCase().includes(q)).slice(0, 20);
+  if (!matches.length) { searchResults.style.display = 'none'; return; }
+  searchResults.style.display = 'block';
+  matches.forEach(n => {
+    const el = document.createElement('div');
+    el.className = 'search-item';
+    el.textContent = n.label;
+    el.style.borderLeft = `3px solid ${n.color.background}`;
+    el.style.paddingLeft = '8px';
+    el.onclick = () => {
+      network.focus(n.id, { scale: 1.5, animation: true });
+      network.selectNodes([n.id]);
+      showInfo(n.id);
+      searchResults.style.display = 'none';
+      searchInput.value = '';
+    };
+    searchResults.appendChild(el);
+  });
+});
+document.addEventListener('click', e => {
+  if (!searchResults.contains(e.target) && e.target !== searchInput)
+    searchResults.style.display = 'none';
+});
+
+const hiddenCommunities = new Set();
+const legendEl = document.getElementById('legend');
+LEGEND.forEach(c => {
+  const item = document.createElement('div');
+  item.className = 'legend-item';
+  item.innerHTML = `<div class="legend-dot" style="background:${c.color}"></div>
+    <span class="legend-label">${c.label}</span>
+    <span class="legend-count">${c.count}</span>`;
+  item.onclick = () => {
+    if (hiddenCommunities.has(c.cid)) {
+      hiddenCommunities.delete(c.cid);
+      item.classList.remove('dimmed');
+    } else {
+      hiddenCommunities.add(c.cid);
+      item.classList.add('dimmed');
+    }
+    const updates = RAW_NODES
+      .filter(n => n.community === c.cid)
+      .map(n => ({ id: n.id, hidden: hiddenCommunities.has(c.cid) }));
+    nodesDS.update(updates);
+  };
+  legendEl.appendChild(item);
+});
+</script>
+<script>
+// Render hyperedges as shaded regions
+const hyperedges = [{"id": "fraud_detection_pipeline", "label": "Fraud Detection Pipeline", "nodes": ["agent_md_fraud_detector", "verify_bank_statement_skill", "agent_md_risk_classification", "agent_md_fraud_assessment_output", "learn_and_update_skill"], "relation": "implement", "confidence": "EXTRACTED", "confidence_score": 0.95, "source_file": "agents/fraud-detector/AGENT.md"}, {"id": "ontology_entity_graph", "label": "Loan Application Entity Relationship Graph", "nodes": ["ontology_md_applicant", "ontology_md_bank_account", "ontology_md_transaction", "ontology_md_salary_transaction", "ontology_md_vpbank_employee", "ontology_md_verification_photo", "ontology_md_loan_application_package", "ontology_md_employer"], "relation": "form", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "ontology/ONTOLOGY.md"}, {"id": "costar_architecture_flow", "label": "COSTAR Architecture Flow", "nodes": ["claude_md_costar_architecture", "agents_md_costar_co", "agents_md_costar_star", "agents_md_neo_architect", "agent_md_fraud_detector"], "relation": "participate_in", "confidence": "EXTRACTED", "confidence_score": 1.0, "source_file": "agents/AGENTS.md"}];
+function drawHyperedges() {
+    const canvas = network.canvas.frame.canvas;
+    const ctx = canvas.getContext('2d');
+    hyperedges.forEach(h => {
+        const positions = h.nodes
+            .map(nid => network.getPositions([nid])[nid])
+            .filter(p => p !== undefined);
+        if (positions.length < 2) return;
+        // Draw convex hull as filled polygon
+        ctx.save();
+        ctx.globalAlpha = 0.12;
+        ctx.fillStyle = '#6366f1';
+        ctx.strokeStyle = '#6366f1';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        const scale = network.getScale();
+        const offset = network.getViewPosition();
+        const toCanvas = (p) => ({
+            x: (p.x - offset.x) * scale + canvas.width / 2,
+            y: (p.y - offset.y) * scale + canvas.height / 2
+        });
+        const pts = positions.map(toCanvas);
+        // Expand hull slightly
+        const cx = pts.reduce((s, p) => s + p.x, 0) / pts.length;
+        const cy = pts.reduce((s, p) => s + p.y, 0) / pts.length;
+        const expanded = pts.map(p => ({
+            x: cx + (p.x - cx) * 1.15,
+            y: cy + (p.y - cy) * 1.15
+        }));
+        ctx.moveTo(expanded[0].x, expanded[0].y);
+        expanded.slice(1).forEach(p => ctx.lineTo(p.x, p.y));
+        ctx.closePath();
+        ctx.fill();
+        ctx.globalAlpha = 0.4;
+        ctx.stroke();
+        // Label
+        ctx.globalAlpha = 0.8;
+        ctx.fillStyle = '#4f46e5';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.textAlign = 'center';
+        ctx.fillText(h.label, cx, cy - 5);
+        ctx.restore();
+    });
+}
+network.on('afterDrawing', drawHyperedges);
+</script>
+</body>
+</html>

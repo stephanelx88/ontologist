@@ -1,0 +1,166 @@
+# Core entities for Vietnamese bank statement verification in loan applications
+# Knowledge type: proprietary (extracted from MBBank app screenshots in VPBank loan verification packages)
+
+entities:
+
+  - id: loan-application-package
+    name: Loan Application Package
+    description: >
+      A bundle of documents submitted for credit/loan approval. Contains
+      bank statement screenshots, employee badge photo, and application forms.
+      Each package has a unique loan reference number (LN prefix).
+    attributes:
+      - loan_reference: "string (e.g., LN2501104785157)"
+      - submission_date: "date"
+      - status: "pending | approved | rejected"
+    confidence: high
+    source: "Both PDF packages — filename pattern + document structure"
+
+  - id: applicant
+    name: Applicant
+    description: >
+      The person applying for credit. Identified by their bank account name.
+      May differ from the account holder name displayed in the banking app
+      (a fraud signal if mismatched).
+    attributes:
+      - full_name: "string"
+      - bank_account_numbers: "list[string]"
+      - primary_bank: "string"
+      - declared_employer: "string"
+    confidence: high
+    source: "MBBank app account detail screens"
+
+  - id: bank-account
+    name: Bank Account
+    description: >
+      A financial account held at a bank. Shown in mobile banking app screenshots.
+      Types include: payment account (tài khoản thanh toán), overdraft account
+      (tài khoản thấu chi), foreign currency account (tài khoản ngoại tệ).
+    attributes:
+      - account_number: "string"
+      - account_type: "payment | overdraft | foreign_currency"
+      - balance: "number (VND)"
+      - holder_name: "string (as shown in app — TGTT label)"
+      - bank: "string"
+      - is_default: "boolean"
+    confidence: high
+    source: "MBBank account list and detail screens, both packages"
+
+  - id: transaction
+    name: Transaction
+    description: >
+      A financial transaction visible in the bank statement. Key fields for
+      fraud detection: amount, sender, description (nội dung), timestamp,
+      and reference codes (mã giao dịch, trace).
+    attributes:
+      - amount: "number (VND)"
+      - direction: "incoming | outgoing"
+      - counterparty: "string"
+      - description: "string (nội dung)"
+      - timestamp: "datetime"
+      - reference_code: "string (mã giao dịch)"
+      - trace_number: "string"
+      - transaction_type: "salary | transfer | payment | other"
+    confidence: high
+    source: "Transaction detail screens, both packages"
+
+  - id: salary-transaction
+    name: Salary Transaction
+    description: >
+      A specific transaction type — incoming transfer from employer as salary.
+      Identified by description containing "luong", "lương", or "CUSTOMER Luong".
+      Critical for income verification in loan underwriting.
+    attributes:
+      - period: "string (e.g., 'kỳ 1 tháng 01 năm 2025')"
+      - employer_name: "string"
+      - amount: "number (VND)"
+      - includes_bonus: "boolean (e.g., 'vo thuong tet' = Tet bonus)"
+    confidence: high
+    source: "Package 1 page 5, Package 2 pages 4-5"
+
+  - id: vpbank-employee
+    name: VPBank Employee
+    description: >
+      The loan officer or credit staff who photographs the verification evidence.
+      Identified by employee badge placed alongside phone screenshots.
+      Badge contains: photo, name, employee ID number.
+    attributes:
+      - full_name: "string"
+      - employee_id: "string (numeric)"
+      - badge_photo: "present | absent"
+    confidence: high
+    source: "Employee badges visible in all pages of both packages"
+
+  - id: verification-photo
+    name: Verification Photo
+    description: >
+      A photograph taken by the VPBank employee showing the applicant's mobile
+      banking app screen alongside the employee's badge. Forms a chain of
+      evidence: who verified, what was shown, when it was captured.
+    attributes:
+      - timestamp: "datetime (from photo metadata or screen)"
+      - location: "string (from photo metadata, e.g., 'Hà Nội')"
+      - screen_type: "home | qr | account_list | account_detail | transaction_detail"
+      - device_type: "iphone | samsung | other"
+      - device_model: "string (e.g., 'iPhone SE', 'Samsung Galaxy S23') — for cross-applicant device reuse detection"
+      - has_metadata: "boolean — whether photo has embedded timestamp/geolocation"
+      - badge_visible: "boolean"
+      - background_document: "string | null (e.g., 'VPBank application form')"
+    confidence: high
+    source: "Photo structure consistent across all 10 pages of both packages"
+
+  - id: bank-application-form
+    name: Bank Application Form
+    description: >
+      The physical VPBank form visible in the background. Title: "GIẤY ĐĂNG KÝ
+      KIỂM HỢP ĐỒNG CẤP HẠN MỨC TÍN DỤNG THẺ... VÀ SỬ DỤNG TÀI KHOẢN
+      THANH TOÁN... NGÂN HÀNG ĐIỆN TỬ". Contains customer personal details.
+    attributes:
+      - form_type: "credit_card_and_ebanking_registration"
+      - bank: "VPBank"
+      - form_number: "string"
+      - date_written: "date (handwritten on form)"
+    confidence: high
+    source: "Background document visible in Package 1 all pages"
+
+  - id: employer
+    name: Employer
+    description: >
+      The company that pays the applicant's salary. Identified from transaction
+      descriptions in salary transfers.
+    attributes:
+      - name: "string"
+      - payment_pattern: "string (e.g., 'monthly', 'bimonthly')"
+    confidence: high
+    source: "Transaction descriptions in both packages"
+
+  - id: verification-session
+    name: Verification Session
+    description: >
+      A temporal grouping of verification photos taken during a single
+      verification encounter. All photos in a session share the same employee
+      badge and should have sequential timestamps within a short window.
+      One loan-application-package contains exactly one verification-session.
+    attributes:
+      - start_time: "datetime (earliest photo timestamp)"
+      - end_time: "datetime (latest photo timestamp)"
+      - duration_seconds: "number"
+      - photo_count: "integer"
+      - location: "string (from photo metadata)"
+    confidence: high
+    source: "Package 2 timestamps span 18:03:45-18:06:08 (2m23s) — one session"
+
+  - id: income-profile
+    name: Income Profile
+    description: >
+      An aggregate view of the applicant's demonstrated income, derived from
+      salary transactions visible in the bank statement screenshots. Used to
+      assess income regularity, average salary, and balance-to-income ratio.
+    attributes:
+      - average_monthly_salary: "number (VND)"
+      - salary_count: "integer (number of salary transactions shown)"
+      - salary_regularity: "regular | irregular | insufficient_data"
+      - demonstrated_employer: "string"
+      - period_covered: "string (e.g., 'Nov 2024 - Jan 2025')"
+    confidence: high
+    source: "Derived from salary transactions in both packages"

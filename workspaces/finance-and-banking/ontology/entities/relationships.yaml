@@ -1,0 +1,125 @@
+# Relationships between entities in Vietnamese bank statement verification
+# Knowledge type: proprietary
+
+relationships:
+
+  # === Ownership ===
+  - id: applicant-holds-account
+    source: applicant
+    target: bank-account
+    relation: holds
+    confidence: EXTRACTED
+    source_quote: "Account list shows accounts under applicant name"
+
+  - id: applicant-submits-package
+    source: applicant
+    target: loan-application-package
+    relation: submits
+    confidence: EXTRACTED
+
+  - id: applicant-employed-by
+    source: applicant
+    target: employer
+    relation: employed_by
+    confidence: EXTRACTED
+    source_quote: "Salary transaction descriptions name the employer"
+
+  # === Verification Chain ===
+  - id: employee-verifies-package
+    source: vpbank-employee
+    target: loan-application-package
+    relation: verifies
+    confidence: EXTRACTED
+    source_quote: "Employee badge visible alongside all screenshots"
+
+  - id: employee-captures-photo
+    source: vpbank-employee
+    target: verification-photo
+    relation: captures
+    confidence: EXTRACTED
+
+  - id: photo-shows-account
+    source: verification-photo
+    target: bank-account
+    relation: evidences
+    confidence: EXTRACTED
+
+  - id: photo-shows-transaction
+    source: verification-photo
+    target: transaction
+    relation: evidences
+    confidence: EXTRACTED
+
+  # === Financial ===
+  - id: account-contains-transactions
+    source: bank-account
+    target: transaction
+    relation: contains
+    confidence: EXTRACTED
+
+  - id: salary-proves-income
+    source: salary-transaction
+    target: loan-application-package
+    relation: proves_income_for
+    confidence: EXTRACTED
+    source_quote: "Salary transfers shown as income evidence"
+
+  - id: employer-pays-salary
+    source: employer
+    target: salary-transaction
+    relation: originates
+    confidence: EXTRACTED
+
+  # === Document ===
+  - id: package-contains-form
+    source: loan-application-package
+    target: bank-application-form
+    relation: contains
+    confidence: EXTRACTED
+
+  - id: package-contains-photos
+    source: loan-application-package
+    target: verification-photo
+    relation: contains
+    confidence: EXTRACTED
+
+  # === Type Hierarchy ===
+  - id: salary-is-a-transaction
+    source: salary-transaction
+    target: transaction
+    relation: is_a
+    confidence: EXTRACTED
+    source_quote: "Salary transaction is a specialized type of transaction"
+
+  # === Session & Profile ===
+  - id: package-has-session
+    source: loan-application-package
+    target: verification-session
+    relation: contains
+    confidence: EXTRACTED
+
+  - id: session-contains-photos
+    source: verification-session
+    target: verification-photo
+    relation: contains
+    confidence: EXTRACTED
+    source_quote: "All photos in a session share the same badge and sequential timestamps"
+
+  - id: session-performed-by
+    source: verification-session
+    target: vpbank-employee
+    relation: performed_by
+    confidence: EXTRACTED
+
+  - id: package-has-income-profile
+    source: loan-application-package
+    target: income-profile
+    relation: contains
+    confidence: INFERRED
+    source_quote: "Income profile aggregated from salary transactions in the package"
+
+  - id: income-profile-from-salary
+    source: income-profile
+    target: salary-transaction
+    relation: aggregates
+    confidence: INFERRED

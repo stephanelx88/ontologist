@@ -1,0 +1,58 @@
+# Ontological Commitment Journal
+commitments:
+  - id: COMMIT-001
+    timestamp: "2026-04-09T20:45:00Z"
+    domain: "finance-and-banking"
+    decision: "Domain archetype is Inspection (artifact → rules → anomaly detection)"
+    alternatives_considered:
+      - option: "Diagnostic archetype (symptoms → root cause)"
+        faithfulness_to_source: 0.3
+        agent_utility: 0.4
+      - option: "Inspection archetype (artifact → rules → anomaly)"
+        faithfulness_to_source: 0.95
+        agent_utility: 0.9
+    chosen: "inspection"
+    rationale: "Loan packages are artifacts inspected against rules to detect anomalies. Not diagnosing a system — inspecting documents."
+    cost: "Less focus on causal chains, more on rule matching"
+    reversibility: "low"
+    confidence: 0.95
+    outcome: null
+    user_approved: true
+
+  - id: COMMIT-002
+    timestamp: "2026-04-09T20:45:00Z"
+    domain: "finance-and-banking"
+    decision: "Primary entity is loan-application-package, not bank-statement"
+    alternatives_considered:
+      - option: "bank-statement as primary entity"
+        faithfulness_to_source: 0.5
+        agent_utility: 0.5
+      - option: "loan-application-package as primary entity"
+        faithfulness_to_source: 0.9
+        agent_utility: 0.85
+    chosen: "loan-application-package"
+    rationale: "The unit of analysis is the whole package — badge + screenshots + form. A bank statement alone lacks the verification chain."
+    cost: "More complex entity with sub-components"
+    reversibility: "medium"
+    confidence: 0.9
+    outcome: null
+    user_approved: true
+
+  - id: COMMIT-003
+    timestamp: "2026-04-09T20:45:00Z"
+    domain: "finance-and-banking"
+    decision: "Fraud agent input is verification photos, not raw PDFs"
+    alternatives_considered:
+      - option: "Raw PDF as input"
+        faithfulness_to_source: 0.4
+        agent_utility: 0.3
+      - option: "Individual verification photos as input"
+        faithfulness_to_source: 0.9
+        agent_utility: 0.9
+    chosen: "verification photos"
+    rationale: "The photos ARE the evidence. PDFs are just containers. Agent needs to reason about each photo's content, timestamps, and cross-photo consistency."
+    cost: "Requires image extraction step before agent can work"
+    reversibility: "low"
+    confidence: 0.9
+    outcome: null
+    user_approved: true

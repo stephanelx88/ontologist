@@ -15,7 +15,7 @@
 ## Full Directory Structure
 
 ```
-~/neo-workspaces/{domain-name}/
+workspaces/{domain-name}/
 ├── CLAUDE.md                          # Entry point
 ├── agents/
 │   ├── AGENTS.md                      # Router + COSTAR overview

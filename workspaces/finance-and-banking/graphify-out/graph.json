@@ -1,0 +1,1154 @@
+{
+  "directed": false,
+  "multigraph": false,
+  "graph": {
+    "hyperedges": [
+      {
+        "id": "fraud_detection_pipeline",
+        "label": "Fraud Detection Pipeline",
+        "nodes": [
+          "agent_md_fraud_detector",
+          "verify_bank_statement_skill",
+          "agent_md_risk_classification",
+          "agent_md_fraud_assessment_output",
+          "learn_and_update_skill"
+        ],
+        "relation": "implement",
+        "confidence": "EXTRACTED",
+        "confidence_score": 0.95,
+        "source_file": "agents/fraud-detector/AGENT.md"
+      },
+      {
+        "id": "ontology_entity_graph",
+        "label": "Loan Application Entity Relationship Graph",
+        "nodes": [
+          "ontology_md_applicant",
+          "ontology_md_bank_account",
+          "ontology_md_transaction",
+          "ontology_md_salary_transaction",
+          "ontology_md_vpbank_employee",
+          "ontology_md_verification_photo",
+          "ontology_md_loan_application_package",
+          "ontology_md_employer"
+        ],
+        "relation": "form",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "ontology/ONTOLOGY.md"
+      },
+      {
+        "id": "costar_architecture_flow",
+        "label": "COSTAR Architecture Flow",
+        "nodes": [
+          "claude_md_costar_architecture",
+          "agents_md_costar_co",
+          "agents_md_costar_star",
+          "agents_md_neo_architect",
+          "agent_md_fraud_detector"
+        ],
+        "relation": "participate_in",
+        "confidence": "EXTRACTED",
+        "confidence_score": 1.0,
+        "source_file": "agents/AGENTS.md"
+      }
+    ]
+  },
+  "nodes": [
+    {
+      "label": "Finance and Banking Neo Workspace",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "id": "claude_md_workspace",
+      "community": 1
+    },
+    {
+      "label": "COSTAR Cognitive Architecture",
+      "file_type": "document",
+      "source_file": "CLAUDE.md",
+      "id": "claude_md_costar_architecture",
+      "community": 1
+    },
+    {
+      "label": "Agents Registry",
+      "file_type": "document",
+      "source_file": "agents/AGENTS.md",
+      "id": "agents_md_agents_registry",
+      "community": 1
+    },
+    {
+      "label": "Neo.Architect",
+      "file_type": "document",
+      "source_file": "agents/AGENTS.md",
+      "id": "agents_md_neo_architect",
+      "community": 1
+    },
+    {
+      "label": "COSTAR CO - Curate and Organize",
+      "file_type": "document",
+      "source_file": "agents/AGENTS.md",
+      "id": "agents_md_costar_co",
+      "community": 1
+    },
+    {
+      "label": "COSTAR STAR - See Think Act Reflect",
+      "file_type": "document",
+      "source_file": "agents/AGENTS.md",
+      "id": "agents_md_costar_star",
+      "community": 1
+    },
+    {
+      "label": "Fraud Detector Agent",
+      "file_type": "document",
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "id": "agent_md_fraud_detector",
+      "community": 3
+    },
+    {
+      "label": "Fraud Assessment Output Format",
+      "file_type": "document",
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "id": "agent_md_fraud_assessment_output",
+      "community": 3
+    },
+    {
+      "label": "Risk Classification (CLEAN/REVIEW/SUSPICIOUS)",
+      "file_type": "document",
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "id": "agent_md_risk_classification",
+      "community": 3
+    },
+    {
+      "label": "Standard Package Verification Scenario",
+      "file_type": "document",
+      "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md",
+      "id": "core_workflow_standard_verification",
+      "community": 3
+    },
+    {
+      "label": "Name Mismatch Detection Scenario",
+      "file_type": "document",
+      "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md",
+      "id": "core_workflow_name_mismatch",
+      "community": 2
+    },
+    {
+      "label": "Timestamp Manipulation Scenario",
+      "file_type": "document",
+      "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md",
+      "id": "core_workflow_timestamp_manipulation",
+      "community": 6
+    },
+    {
+      "label": "Finance and Banking Ontology",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_ontology",
+      "community": 1
+    },
+    {
+      "label": "Loan Application Package Entity",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_loan_application_package",
+      "community": 4
+    },
+    {
+      "label": "Applicant Entity",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_applicant",
+      "community": 4
+    },
+    {
+      "label": "Bank Account Entity",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_bank_account",
+      "community": 4
+    },
+    {
+      "label": "Transaction Entity",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_transaction",
+      "community": 4
+    },
+    {
+      "label": "Salary Transaction Entity",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_salary_transaction",
+      "community": 4
+    },
+    {
+      "label": "VPBank Employee Entity",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_vpbank_employee",
+      "community": 4
+    },
+    {
+      "label": "Verification Photo Entity",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_verification_photo",
+      "community": 4
+    },
+    {
+      "label": "Bank Application Form Entity",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_bank_application_form",
+      "community": 5
+    },
+    {
+      "label": "Employer Entity",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_employer",
+      "community": 4
+    },
+    {
+      "label": "MBBank Loan Package 1 (LN2501104785157)",
+      "file_type": "document",
+      "source_file": "ontology/INVENTORY.md",
+      "id": "inventory_md_package1",
+      "community": 2
+    },
+    {
+      "label": "MBBank Loan Package 2 (LN2501134790716)",
+      "file_type": "document",
+      "source_file": "ontology/INVENTORY.md",
+      "id": "inventory_md_package2",
+      "community": 2
+    },
+    {
+      "label": "Gap: Photo Manipulation Detection Rules",
+      "file_type": "document",
+      "source_file": "ontology/docs/gaps.md",
+      "author": "Neo.Architect",
+      "id": "gaps_md_photo_manipulation",
+      "community": 3
+    },
+    {
+      "label": "Gap: Cross-Applicant Device Reuse Detection",
+      "file_type": "document",
+      "source_file": "ontology/docs/gaps.md",
+      "author": "Neo.Architect",
+      "id": "gaps_md_device_reuse",
+      "community": 0
+    },
+    {
+      "label": "Gap: VPBank Employee Volume Thresholds",
+      "file_type": "document",
+      "source_file": "ontology/docs/gaps.md",
+      "author": "Neo.Architect",
+      "id": "gaps_md_employee_volume",
+      "community": 0
+    },
+    {
+      "label": "Gap: Other Bank App Layouts",
+      "file_type": "document",
+      "source_file": "ontology/docs/gaps.md",
+      "author": "Neo.Architect",
+      "id": "gaps_md_other_banks",
+      "community": 1
+    },
+    {
+      "label": "Gap: Loan Application Form Field Extraction",
+      "file_type": "document",
+      "source_file": "ontology/docs/gaps.md",
+      "author": "Neo.Architect",
+      "id": "gaps_md_form_extraction",
+      "community": 5
+    },
+    {
+      "label": "Skill: Learn and Update",
+      "file_type": "document",
+      "source_file": "ontology/skills/learn-and-update.md",
+      "id": "learn_and_update_skill",
+      "community": 3
+    },
+    {
+      "label": "Skill: Verify Bank Statement Package",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bank_statement_skill",
+      "community": 0
+    },
+    {
+      "label": "Rule: badge-present-check",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_badge_present_check",
+      "community": 0
+    },
+    {
+      "label": "Rule: employee-consistency-check",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_employee_consistency",
+      "community": 0
+    },
+    {
+      "label": "Rule: name-mismatch-check",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_name_mismatch",
+      "community": 2
+    },
+    {
+      "label": "Rule: balance-consistency-check",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_balance_consistency",
+      "community": 0
+    },
+    {
+      "label": "Rule: photo-timestamp-sequence",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_timestamp_sequence",
+      "community": 6
+    },
+    {
+      "label": "Rule: screenshot-date-vs-photo-date",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_screenshot_date",
+      "community": 0
+    },
+    {
+      "label": "Rule: salary-description-format",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_salary_format",
+      "community": 0
+    },
+    {
+      "label": "Rule: salary-regularity-check",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_salary_regularity",
+      "community": 0
+    },
+    {
+      "label": "Rule: round-number-deposit",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_round_number",
+      "community": 0
+    },
+    {
+      "label": "Rule: balance-vs-salary-ratio",
+      "file_type": "document",
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "id": "verify_bs_balance_salary_ratio",
+      "community": 0
+    },
+    {
+      "label": "MBBank Mobile App Loan Verification Source",
+      "file_type": "document",
+      "source_file": "sources/mbbank-loan-packages.md",
+      "id": "sources_md_mbbank",
+      "community": 2
+    },
+    {
+      "label": "Applicant: Le Thi Phuong (Package 1)",
+      "file_type": "document",
+      "source_file": "sources/mbbank-loan-packages.md",
+      "id": "sources_md_le_thi_phuong",
+      "community": 2
+    },
+    {
+      "label": "Applicant: Nguyen Bich Hanh (Package 2)",
+      "file_type": "document",
+      "source_file": "sources/mbbank-loan-packages.md",
+      "id": "sources_md_nguyen_bich_hanh",
+      "community": 2
+    },
+    {
+      "label": "VPBank Employee: Doan Thuy Hang (ID 42589)",
+      "file_type": "document",
+      "source_file": "sources/mbbank-loan-packages.md",
+      "id": "sources_md_doan_thuy_hang",
+      "community": 2
+    },
+    {
+      "label": "VPBank Employee: Nguyen Tuyet Mai (ID 47223)",
+      "file_type": "document",
+      "source_file": "sources/mbbank-loan-packages.md",
+      "id": "sources_md_nguyen_tuyet_mai",
+      "community": 2
+    },
+    {
+      "label": "VPBank Verification Procedure",
+      "file_type": "document",
+      "source_file": "sources/mbbank-loan-packages.md",
+      "id": "sources_md_vpbank_verification_procedure",
+      "community": 0
+    },
+    {
+      "label": "QA Report - No Review Yet",
+      "file_type": "document",
+      "source_file": "QA_REPORT.md",
+      "id": "qa_report_status",
+      "community": 1
+    },
+    {
+      "label": "Rationale: Epistemic Status Draft",
+      "file_type": "document",
+      "source_file": "ontology/ONTOLOGY.md",
+      "id": "ontology_md_epistemic_draft",
+      "community": 1
+    },
+    {
+      "label": "Rationale: Minimize False Positives",
+      "file_type": "document",
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "id": "agent_md_rationale_minimize_false_positives",
+      "community": 3
+    },
+    {
+      "label": "Rationale: Out of Scope Boundaries",
+      "file_type": "document",
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "id": "agent_md_rationale_out_of_scope",
+      "community": 3
+    }
+  ],
+  "links": [
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "weight": 1.0,
+      "_src": "claude_md_workspace",
+      "_tgt": "agents_md_agents_registry",
+      "source": "claude_md_workspace",
+      "target": "agents_md_agents_registry"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "weight": 1.0,
+      "_src": "claude_md_workspace",
+      "_tgt": "ontology_md_ontology",
+      "source": "claude_md_workspace",
+      "target": "ontology_md_ontology"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "weight": 1.0,
+      "_src": "claude_md_workspace",
+      "_tgt": "qa_report_status",
+      "source": "claude_md_workspace",
+      "target": "qa_report_status"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "CLAUDE.md",
+      "weight": 1.0,
+      "_src": "claude_md_workspace",
+      "_tgt": "claude_md_costar_architecture",
+      "source": "claude_md_workspace",
+      "target": "claude_md_costar_architecture"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/AGENTS.md",
+      "weight": 1.0,
+      "_src": "agents_md_costar_co",
+      "_tgt": "agents_md_neo_architect",
+      "source": "agents_md_neo_architect",
+      "target": "agents_md_costar_co"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/AGENTS.md",
+      "weight": 1.0,
+      "_src": "agents_md_neo_architect",
+      "_tgt": "ontology_md_ontology",
+      "source": "agents_md_neo_architect",
+      "target": "ontology_md_ontology"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/AGENTS.md",
+      "weight": 1.0,
+      "_src": "agents_md_costar_co",
+      "_tgt": "agents_md_costar_star",
+      "source": "agents_md_costar_co",
+      "target": "agents_md_costar_star"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/AGENTS.md",
+      "weight": 1.0,
+      "_src": "agents_md_costar_star",
+      "_tgt": "agent_md_fraud_detector",
+      "source": "agents_md_costar_star",
+      "target": "agent_md_fraud_detector"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "weight": 1.0,
+      "_src": "agent_md_fraud_detector",
+      "_tgt": "ontology_md_ontology",
+      "source": "agent_md_fraud_detector",
+      "target": "ontology_md_ontology"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "weight": 1.0,
+      "_src": "agent_md_fraud_detector",
+      "_tgt": "learn_and_update_skill",
+      "source": "agent_md_fraud_detector",
+      "target": "learn_and_update_skill"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "weight": 0.9,
+      "_src": "agent_md_fraud_detector",
+      "_tgt": "gaps_md_photo_manipulation",
+      "source": "agent_md_fraud_detector",
+      "target": "gaps_md_photo_manipulation"
+    },
+    {
+      "relation": "references",
+      "confidence": "INFERRED",
+      "confidence_score": 0.9,
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "weight": 1.0,
+      "_src": "agent_md_fraud_detector",
+      "_tgt": "verify_bank_statement_skill",
+      "source": "agent_md_fraud_detector",
+      "target": "verify_bank_statement_skill"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "weight": 1.0,
+      "_src": "agent_md_fraud_detector",
+      "_tgt": "agent_md_risk_classification",
+      "source": "agent_md_fraud_detector",
+      "target": "agent_md_risk_classification"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "weight": 1.0,
+      "_src": "agent_md_fraud_detector",
+      "_tgt": "agent_md_fraud_assessment_output",
+      "source": "agent_md_fraud_detector",
+      "target": "agent_md_fraud_assessment_output"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "weight": 1.0,
+      "_src": "agent_md_rationale_minimize_false_positives",
+      "_tgt": "agent_md_fraud_detector",
+      "source": "agent_md_fraud_detector",
+      "target": "agent_md_rationale_minimize_false_positives"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/AGENT.md",
+      "weight": 1.0,
+      "_src": "agent_md_rationale_out_of_scope",
+      "_tgt": "agent_md_fraud_detector",
+      "source": "agent_md_fraud_detector",
+      "target": "agent_md_rationale_out_of_scope"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md",
+      "weight": 1.0,
+      "_src": "core_workflow_standard_verification",
+      "_tgt": "agent_md_fraud_detector",
+      "source": "agent_md_fraud_detector",
+      "target": "core_workflow_standard_verification"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md",
+      "weight": 1.0,
+      "_src": "core_workflow_standard_verification",
+      "_tgt": "agent_md_risk_classification",
+      "source": "agent_md_risk_classification",
+      "target": "core_workflow_standard_verification"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "agent_md_risk_classification",
+      "source": "agent_md_risk_classification",
+      "target": "verify_bank_statement_skill"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md",
+      "weight": 1.0,
+      "_src": "core_workflow_name_mismatch",
+      "_tgt": "verify_bs_name_mismatch",
+      "source": "core_workflow_name_mismatch",
+      "target": "verify_bs_name_mismatch"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.75,
+      "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md",
+      "weight": 0.7,
+      "_src": "core_workflow_name_mismatch",
+      "_tgt": "sources_md_nguyen_bich_hanh",
+      "source": "core_workflow_name_mismatch",
+      "target": "sources_md_nguyen_bich_hanh"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/fraud-detector/spec/scenarios/core-workflow.md",
+      "weight": 1.0,
+      "_src": "core_workflow_timestamp_manipulation",
+      "_tgt": "verify_bs_timestamp_sequence",
+      "source": "core_workflow_timestamp_manipulation",
+      "target": "verify_bs_timestamp_sequence"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 0.8,
+      "_src": "ontology_md_ontology",
+      "_tgt": "inventory_md_package1",
+      "source": "ontology_md_ontology",
+      "target": "inventory_md_package1"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 0.8,
+      "_src": "ontology_md_ontology",
+      "_tgt": "inventory_md_package2",
+      "source": "ontology_md_ontology",
+      "target": "inventory_md_package2"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 0.8,
+      "_src": "ontology_md_ontology",
+      "_tgt": "gaps_md_photo_manipulation",
+      "source": "ontology_md_ontology",
+      "target": "gaps_md_photo_manipulation"
+    },
+    {
+      "relation": "rationale_for",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_epistemic_draft",
+      "_tgt": "ontology_md_ontology",
+      "source": "ontology_md_ontology",
+      "target": "ontology_md_epistemic_draft"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/docs/gaps.md",
+      "weight": 0.7,
+      "_src": "gaps_md_other_banks",
+      "_tgt": "ontology_md_ontology",
+      "source": "ontology_md_ontology",
+      "target": "gaps_md_other_banks"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_applicant",
+      "_tgt": "ontology_md_loan_application_package",
+      "source": "ontology_md_loan_application_package",
+      "target": "ontology_md_applicant"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_vpbank_employee",
+      "_tgt": "ontology_md_loan_application_package",
+      "source": "ontology_md_loan_application_package",
+      "target": "ontology_md_vpbank_employee"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_salary_transaction",
+      "_tgt": "ontology_md_loan_application_package",
+      "source": "ontology_md_loan_application_package",
+      "target": "ontology_md_salary_transaction"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_applicant",
+      "_tgt": "ontology_md_bank_account",
+      "source": "ontology_md_applicant",
+      "target": "ontology_md_bank_account"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_applicant",
+      "_tgt": "ontology_md_employer",
+      "source": "ontology_md_applicant",
+      "target": "ontology_md_employer"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 0.8,
+      "_src": "sources_md_le_thi_phuong",
+      "_tgt": "ontology_md_applicant",
+      "source": "ontology_md_applicant",
+      "target": "sources_md_le_thi_phuong"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 0.8,
+      "_src": "sources_md_nguyen_bich_hanh",
+      "_tgt": "ontology_md_applicant",
+      "source": "ontology_md_applicant",
+      "target": "sources_md_nguyen_bich_hanh"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_bank_account",
+      "_tgt": "ontology_md_transaction",
+      "source": "ontology_md_bank_account",
+      "target": "ontology_md_transaction"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_verification_photo",
+      "_tgt": "ontology_md_bank_account",
+      "source": "ontology_md_bank_account",
+      "target": "ontology_md_verification_photo"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_employer",
+      "_tgt": "ontology_md_salary_transaction",
+      "source": "ontology_md_salary_transaction",
+      "target": "ontology_md_employer"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md",
+      "weight": 1.0,
+      "_src": "ontology_md_vpbank_employee",
+      "_tgt": "ontology_md_verification_photo",
+      "source": "ontology_md_vpbank_employee",
+      "target": "ontology_md_verification_photo"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 0.8,
+      "_src": "sources_md_doan_thuy_hang",
+      "_tgt": "ontology_md_vpbank_employee",
+      "source": "ontology_md_vpbank_employee",
+      "target": "sources_md_doan_thuy_hang"
+    },
+    {
+      "relation": "implements",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 0.8,
+      "_src": "sources_md_nguyen_tuyet_mai",
+      "_tgt": "ontology_md_vpbank_employee",
+      "source": "ontology_md_vpbank_employee",
+      "target": "sources_md_nguyen_tuyet_mai"
+    },
+    {
+      "relation": "conceptually_related_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.8,
+      "source_file": "ontology/docs/gaps.md",
+      "weight": 0.7,
+      "_src": "gaps_md_form_extraction",
+      "_tgt": "ontology_md_bank_application_form",
+      "source": "ontology_md_bank_application_form",
+      "target": "gaps_md_form_extraction"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 1.0,
+      "_src": "inventory_md_package1",
+      "_tgt": "sources_md_le_thi_phuong",
+      "source": "inventory_md_package1",
+      "target": "sources_md_le_thi_phuong"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 1.0,
+      "_src": "inventory_md_package1",
+      "_tgt": "sources_md_doan_thuy_hang",
+      "source": "inventory_md_package1",
+      "target": "sources_md_doan_thuy_hang"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 1.0,
+      "_src": "sources_md_mbbank",
+      "_tgt": "inventory_md_package1",
+      "source": "inventory_md_package1",
+      "target": "sources_md_mbbank"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 1.0,
+      "_src": "inventory_md_package2",
+      "_tgt": "sources_md_nguyen_bich_hanh",
+      "source": "inventory_md_package2",
+      "target": "sources_md_nguyen_bich_hanh"
+    },
+    {
+      "relation": "shares_data_with",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 1.0,
+      "_src": "inventory_md_package2",
+      "_tgt": "sources_md_nguyen_tuyet_mai",
+      "source": "inventory_md_package2",
+      "target": "sources_md_nguyen_tuyet_mai"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 1.0,
+      "_src": "sources_md_mbbank",
+      "_tgt": "inventory_md_package2",
+      "source": "inventory_md_package2",
+      "target": "sources_md_mbbank"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/learn-and-update.md",
+      "weight": 1.0,
+      "_src": "learn_and_update_skill",
+      "_tgt": "gaps_md_photo_manipulation",
+      "source": "gaps_md_photo_manipulation",
+      "target": "learn_and_update_skill"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 0.8,
+      "_src": "gaps_md_device_reuse",
+      "_tgt": "verify_bank_statement_skill",
+      "source": "gaps_md_device_reuse",
+      "target": "verify_bank_statement_skill"
+    },
+    {
+      "relation": "references",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 0.8,
+      "_src": "gaps_md_employee_volume",
+      "_tgt": "verify_bank_statement_skill",
+      "source": "gaps_md_employee_volume",
+      "target": "verify_bank_statement_skill"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.65,
+      "source_file": "ontology/skills/learn-and-update.md",
+      "weight": 0.5,
+      "_src": "learn_and_update_skill",
+      "_tgt": "verify_bank_statement_skill",
+      "source": "learn_and_update_skill",
+      "target": "verify_bank_statement_skill"
+    },
+    {
+      "relation": "semantically_similar_to",
+      "confidence": "INFERRED",
+      "confidence_score": 0.85,
+      "source_file": "sources/mbbank-loan-packages.md",
+      "weight": 0.9,
+      "_src": "sources_md_vpbank_verification_procedure",
+      "_tgt": "verify_bank_statement_skill",
+      "source": "verify_bank_statement_skill",
+      "target": "sources_md_vpbank_verification_procedure"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_badge_present_check",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_badge_present_check"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_employee_consistency",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_employee_consistency"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_name_mismatch",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_name_mismatch"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_balance_consistency",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_balance_consistency"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_timestamp_sequence",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_timestamp_sequence"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_screenshot_date",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_screenshot_date"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_salary_format",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_salary_format"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_salary_regularity",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_salary_regularity"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_round_number",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_round_number"
+    },
+    {
+      "relation": "implements",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/skills/verify-bank-statement.md",
+      "weight": 1.0,
+      "_src": "verify_bank_statement_skill",
+      "_tgt": "verify_bs_balance_salary_ratio",
+      "source": "verify_bank_statement_skill",
+      "target": "verify_bs_balance_salary_ratio"
+    }
+  ],
+  "hyperedges": [
+    {
+      "id": "fraud_detection_pipeline",
+      "label": "Fraud Detection Pipeline",
+      "nodes": [
+        "agent_md_fraud_detector",
+        "verify_bank_statement_skill",
+        "agent_md_risk_classification",
+        "agent_md_fraud_assessment_output",
+        "learn_and_update_skill"
+      ],
+      "relation": "implement",
+      "confidence": "EXTRACTED",
+      "confidence_score": 0.95,
+      "source_file": "agents/fraud-detector/AGENT.md"
+    },
+    {
+      "id": "ontology_entity_graph",
+      "label": "Loan Application Entity Relationship Graph",
+      "nodes": [
+        "ontology_md_applicant",
+        "ontology_md_bank_account",
+        "ontology_md_transaction",
+        "ontology_md_salary_transaction",
+        "ontology_md_vpbank_employee",
+        "ontology_md_verification_photo",
+        "ontology_md_loan_application_package",
+        "ontology_md_employer"
+      ],
+      "relation": "form",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "ontology/ONTOLOGY.md"
+    },
+    {
+      "id": "costar_architecture_flow",
+      "label": "COSTAR Architecture Flow",
+      "nodes": [
+        "claude_md_costar_architecture",
+        "agents_md_costar_co",
+        "agents_md_costar_star",
+        "agents_md_neo_architect",
+        "agent_md_fraud_detector"
+      ],
+      "relation": "participate_in",
+      "confidence": "EXTRACTED",
+      "confidence_score": 1.0,
+      "source_file": "agents/AGENTS.md"
+    }
+  ]
+}

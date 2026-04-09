@@ -24,7 +24,7 @@ Two subsystems, one interface:
 
 1. Read `neo-trust.yaml` → current phase and permissions
 2. `claude-mem search` → "neo ontologist domains built" + relevant memories
-3. Check pending `gaps.md` in known workspaces under `~/neo-workspaces/`
+3. Check pending `gaps.md` in known workspaces under `workspaces/`
 4. If gaps exist → prioritize gap resolution
 5. Greet user with context: phase, domains completed, pending gaps
 
@@ -105,7 +105,7 @@ Read `neo-trust.yaml` for current phase:
 
 ## Workspace
 
-Domain workspaces live at `~/neo-workspaces/{domain-name}/`.
+Domain workspaces live at `workspaces/{domain-name}/`.
 See `references/workspace-structure.md` for full template.
 
 ---
