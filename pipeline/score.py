@@ -24,9 +24,9 @@ def compute_score(findings: list[Finding]) -> tuple[int, str]:
     - 31–60 → "REVIEW"
     - 61–100 → "SUSPICIOUS"
     """
-    criticals = [f for f in findings if f.severity == "CRITICAL"]
-    warnings = [f for f in findings if f.severity == "WARNING"]
-    infos = [f for f in findings if f.severity == "INFO"]
+    criticals = [f for f in findings if f.severity.lower() == "critical"]
+    warnings = [f for f in findings if f.severity.lower() == "warning"]
+    infos = [f for f in findings if f.severity.lower() == "info"]
 
     score = 0
 
