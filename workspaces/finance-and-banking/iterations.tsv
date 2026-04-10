@@ -12,3 +12,4 @@ iteration	commit	neo_score	ppt	structural	coverage	coherence	loc	status	descript
 10	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
 11	800024f	92.0	80.0	100.0	100.0	100.0	kept	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
 12	7f91096	96.0	90.0	100.0	100.0	100.0	kept	Add rule 'round-number-deposit' to detect: Salary is suspiciously round (exact millions)
+13	707f806	100.0	100.0	100.0	100.0	100.0	kept	Add rule 'balance-vs-salary-ratio' to detect: Balance much higher than demonstrated salary
