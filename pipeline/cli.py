@@ -184,7 +184,9 @@ def main() -> None:
     )
     parser.add_argument(
         "input",
-        help="PDF file path, or directory path when using --batch",
+        nargs="?",
+        default=None,
+        help="PDF file path, directory (with --batch), or omit to run --iterate only",
     )
     parser.add_argument(
         "--output-dir",
@@ -222,6 +224,14 @@ def main() -> None:
     )
 
     args = parser.parse_args()
+
+    # --iterate without input = run learning loop only (no vision needed)
+    if args.input is None:
+        if args.iterate:
+            _run_iterate_only(args)
+            return
+        else:
+            parser.error("Provide a PDF path, or use --iterate to run the learning loop only")
 
     input_path = Path(args.input)
     output_dir = Path(args.output_dir)
@@ -299,6 +309,43 @@ def main() -> None:
         final_score = results[-1]["neo_score"] if results else "N/A"
         print(f"\nIteration complete: {len(results)} iterations, {kept} kept, {reverted} reverted")
         print(f"Final neo_score: {final_score}")
+
+
+def _run_iterate_only(args) -> None:
+    """Run the autoresearch iteration loop without processing any PDFs."""
+    from pipeline.iterate import run_iteration_loop
+    from pipeline.evaluate import compute_neo_score
+
+    workspace = _find_workspace()
+    if not workspace:
+        print("Error: No workspace found. Run '/neo init <domain>' first.", file=sys.stderr)
+        sys.exit(1)
+
+    # Show current state
+    scores = compute_neo_score(workspace / "ontology")
+    print(f"Neo Autoresearch Loop — {workspace}")
+    print("━" * 50)
+    print(f"Current neo_score: {scores['neo_score']:.2f}")
+    print(f"  detection={scores['detection']:.0f}  structural={scores['structural']:.0f}  coverage={scores['coverage']:.0f}  coherence={scores['coherence']:.0f}")
+    print("━" * 50)
+
+    def on_progress(msg: str):
+        print(f"[neo] {msg}")
+
+    results = run_iteration_loop(
+        workspace=workspace,
+        max_iterations=args.max_iterations,
+        on_progress=on_progress,
+    )
+
+    print("━" * 50)
+    kept = sum(1 for r in results if r["status"] == "kept")
+    reverted = sum(1 for r in results if r["status"] == "reverted")
+    skipped = sum(1 for r in results if r["status"] == "skipped")
+    print(f"Done: {len(results)} iterations — {kept} kept, {reverted} reverted, {skipped} skipped")
+    if results:
+        best = max(results, key=lambda r: float(r.get("neo_score", 0)))
+        print(f"Best neo_score: {best['neo_score']}")
 
 
 if __name__ == "__main__":
