@@ -1,0 +1,29 @@
+{
+  "action_id": "assess-LN2501134790716-20260410-033836",
+  "type": "fraud_assessment",
+  "timestamp": "2026-04-10T03:38:36.473118+00:00",
+  "loan_reference": "LN2501134790716",
+  "risk_score": 26,
+  "verdict": "CLEAN",
+  "findings_count": 4,
+  "findings": [
+    {
+      "rule_id": "timestamp-sequence",
+      "severity": "warning"
+    },
+    {
+      "rule_id": "salary-regularity",
+      "severity": "warning"
+    },
+    {
+      "rule_id": "round-number-deposit",
+      "severity": "info"
+    },
+    {
+      "rule_id": "balance-vs-salary-ratio",
+      "severity": "info"
+    }
+  ],
+  "extraction_provider": "claude-code",
+  "pages_analyzed": 9
+}

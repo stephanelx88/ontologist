@@ -1,0 +1,17 @@
+{
+  "action_id": "assess-LN2501104785157-20260410-033507",
+  "type": "fraud_assessment",
+  "timestamp": "2026-04-10T03:35:07.401129+00:00",
+  "loan_reference": "LN2501104785157",
+  "risk_score": 0,
+  "verdict": "CLEAN",
+  "findings_count": 1,
+  "findings": [
+    {
+      "rule_id": "balance-consistency",
+      "severity": "critical"
+    }
+  ],
+  "extraction_provider": "claude-code",
+  "pages_analyzed": 10
+}
