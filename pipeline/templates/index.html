@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Neo Fraud Detection</title>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #0a0a0f;
+      color: #e0e0e0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 32px 16px 64px;
+    }
+
+    /* ── Header ─────────────────────────────────────────── */
+    header {
+      width: 100%;
+      max-width: 900px;
+      margin-bottom: 40px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    header .logo-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+      background: #4ade80;
+      flex-shrink: 0;
+    }
+
+    header h1 {
+      font-size: 1.4rem;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      color: #f0f0f0;
+    }
+
+    header h1 span {
+      color: #4ade80;
+    }
+
+    header p.tagline {
+      margin-left: auto;
+      font-size: 0.78rem;
+      color: #666;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    /* ── Main card ──────────────────────────────────────── */
+    .card {
+      background: #111;
+      border-radius: 12px;
+      padding: 32px;
+      width: 100%;
+      max-width: 900px;
+      margin-bottom: 24px;
+    }
+
+    /* ── Drop zone ──────────────────────────────────────── */
+    #dropZone {
+      border: 2px dashed #2a2a3a;
+      border-radius: 8px;
+      padding: 60px 32px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s;
+      user-select: none;
+    }
+
+    #dropZone:hover,
+    #dropZone.dragover {
+      border-color: #4ade80;
+      background: rgba(74, 222, 128, 0.04);
+    }
+
+    #dropZone .icon {
+      font-size: 2.5rem;
+      margin-bottom: 16px;
+      display: block;
+    }
+
+    #dropZone h2 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-bottom: 8px;
+      color: #e0e0e0;
+    }
+
+    #dropZone p {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 20px;
+    }
+
+    .btn {
+      display: inline-block;
+      padding: 10px 24px;
+      border-radius: 6px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      transition: opacity 0.15s;
+      text-decoration: none;
+    }
+
+    .btn:hover { opacity: 0.85; }
+
+    .btn-primary {
+      background: #4ade80;
+      color: #0a0a0f;
+    }
+
+    .btn-secondary {
+      background: #1e1e2e;
+      color: #e0e0e0;
+      border: 1px solid #2a2a3a;
+    }
+
+    /* ── Progress area ──────────────────────────────────── */
+    #progressArea {
+      display: none;
+    }
+
+    #progressArea h3 {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4ade80;
+      margin-bottom: 12px;
+    }
+
+    #progressLog {
+      font-family: "JetBrains Mono", "Fira Code", "Courier New", monospace;
+      font-size: 0.8rem;
+      line-height: 1.7;
+      color: #aaa;
+      max-height: 200px;
+      overflow-y: auto;
+      background: #0a0a0f;
+      border-radius: 6px;
+      padding: 12px 16px;
+    }
+
+    #progressLog .log-line::before {
+      content: "› ";
+      color: #4ade80;
+    }
+
+    /* ── Result area ────────────────────────────────────── */
+    #resultArea {
+      display: none;
+    }
+
+    /* Score row */
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      margin-bottom: 28px;
+      flex-wrap: wrap;
+    }
+
+    .score-number {
+      font-size: 4rem;
+      font-weight: 800;
+      line-height: 1;
+      color: #f0f0f0;
+    }
+
+    .score-label {
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: #666;
+      margin-top: 4px;
+    }
+
+    .verdict-badge {
+      padding: 6px 18px;
+      border-radius: 999px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+    }
+
+    .verdict-CLEAN    { background: rgba(74, 222, 128, 0.15); color: #4ade80; border: 1px solid #4ade8060; }
+    .verdict-REVIEW   { background: rgba(250, 204, 21, 0.15); color: #facc15; border: 1px solid #facc1560; }
+    .verdict-SUSPICIOUS { background: rgba(248, 113, 113, 0.15); color: #f87171; border: 1px solid #f8717160; }
+
+    /* Info grid */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 16px;
+      margin-bottom: 28px;
+    }
+
+    .info-cell {
+      background: #0a0a0f;
+      border-radius: 8px;
+      padding: 14px 16px;
+    }
+
+    .info-cell .label {
+      font-size: 0.72rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #555;
+      margin-bottom: 6px;
+    }
+
+    .info-cell .value {
+      font-size: 0.95rem;
+      font-weight: 600;
+      color: #e0e0e0;
+      word-break: break-word;
+    }
+
+    /* Section headings */
+    .section-heading {
+      font-size: 0.78rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: #4ade80;
+      margin-bottom: 14px;
+      margin-top: 28px;
+    }
+
+    /* Findings */
+    .findings-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .finding-card {
+      background: #0a0a0f;
+      border-radius: 8px;
+      padding: 14px 16px 14px 20px;
+      border-left: 4px solid #555;
+    }
+
+    .finding-card.CRITICAL { border-left-color: #f87171; }
+    .finding-card.WARNING  { border-left-color: #facc15; }
+    .finding-card.INFO     { border-left-color: #60a5fa; }
+
+    .finding-card .finding-title {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #e0e0e0;
+      margin-bottom: 4px;
+    }
+
+    .finding-card .finding-severity {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      font-weight: 700;
+      margin-right: 8px;
+    }
+
+    .finding-card .finding-severity.CRITICAL { color: #f87171; }
+    .finding-card .finding-severity.WARNING  { color: #facc15; }
+    .finding-card .finding-severity.INFO     { color: #60a5fa; }
+
+    .finding-card .finding-desc {
+      font-size: 0.82rem;
+      color: #888;
+      margin-top: 4px;
+      line-height: 1.5;
+    }
+
+    /* Graph iframe */
+    #graphContainer {
+      margin-top: 8px;
+    }
+
+    #graphFrame {
+      width: 100%;
+      height: 520px;
+      border: none;
+      border-radius: 8px;
+      background: #0a0a0f;
+    }
+
+    .graph-unavailable {
+      background: #0a0a0f;
+      border-radius: 8px;
+      padding: 40px;
+      text-align: center;
+      color: #555;
+      font-size: 0.85rem;
+    }
+
+    /* Action buttons row */
+    .actions-row {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-top: 28px;
+    }
+
+    /* Hidden utility */
+    .hidden { display: none !important; }
+
+    /* File input */
+    #fileInput { display: none; }
+
+    /* Spinner */
+    .spinner {
+      display: inline-block;
+      width: 14px;
+      height: 14px;
+      border: 2px solid #2a2a3a;
+      border-top-color: #4ade80;
+      border-radius: 50%;
+      animation: spin 0.7s linear infinite;
+      vertical-align: middle;
+      margin-right: 8px;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    #statusIndicator {
+      font-size: 0.82rem;
+      color: #666;
+      margin-top: 16px;
+      display: none;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="logo-dot"></div>
+    <h1>Neo <span>Fraud Detection</span></h1>
+    <p class="tagline">Loan Analysis Pipeline</p>
+  </header>
+
+  <!-- Drop zone card -->
+  <div class="card" id="uploadCard">
+    <div id="dropZone">
+      <span class="icon">📄</span>
+      <h2>Drop your PDF here</h2>
+      <p>Drag and drop a loan application PDF, or click to browse</p>
+      <button class="btn btn-primary" onclick="document.getElementById('fileInput').click()">
+        Select PDF
+      </button>
+      <input type="file" id="fileInput" accept=".pdf" />
+    </div>
+
+    <p id="statusIndicator"><span class="spinner"></span> <span id="statusText">Uploading…</span></p>
+  </div>
+
+  <!-- Progress card -->
+  <div class="card" id="progressArea">
+    <h3>Extraction Progress</h3>
+    <div id="progressLog"></div>
+  </div>
+
+  <!-- Result card -->
+  <div class="card" id="resultArea">
+
+    <!-- Score + verdict -->
+    <div class="score-row">
+      <div>
+        <div class="score-number" id="scoreNumber">—</div>
+        <div class="score-label">Risk Score / 100</div>
+      </div>
+      <div id="verdictBadge" class="verdict-badge">—</div>
+    </div>
+
+    <!-- Info grid -->
+    <div class="info-grid">
+      <div class="info-cell">
+        <div class="label">Applicant</div>
+        <div class="value" id="infoApplicant">—</div>
+      </div>
+      <div class="info-cell">
+        <div class="label">Employee</div>
+        <div class="value" id="infoEmployee">—</div>
+      </div>
+      <div class="info-cell">
+        <div class="label">Total Balance</div>
+        <div class="value" id="infoBalance">—</div>
+      </div>
+      <div class="info-cell">
+        <div class="label">Pages Analyzed</div>
+        <div class="value" id="infoPages">—</div>
+      </div>
+    </div>
+
+    <!-- Findings -->
+    <div class="section-heading">Findings</div>
+    <div id="findingsList" class="findings-list">
+      <p style="color:#555;font-size:0.85rem;">No findings.</p>
+    </div>
+
+    <!-- Knowledge graph -->
+    <div class="section-heading">Knowledge Graph</div>
+    <div id="graphContainer">
+      <div class="graph-unavailable" id="graphUnavailable">Graph not available.</div>
+      <iframe id="graphFrame" class="hidden" title="Knowledge Graph"></iframe>
+    </div>
+
+    <!-- Actions -->
+    <div class="actions-row">
+      <button class="btn btn-primary" onclick="downloadJSON()">Download JSON</button>
+      <button class="btn btn-secondary" id="downloadReportBtn">Download Report</button>
+      <button class="btn btn-secondary" onclick="resetUI()">Analyze Another</button>
+    </div>
+  </div>
+
+  <script>
+    // ---------------------------------------------------------------------------
+    // State
+    // ---------------------------------------------------------------------------
+    let currentResult = null;
+    let currentJobId = null;
+
+    // ---------------------------------------------------------------------------
+    // Drop zone
+    // ---------------------------------------------------------------------------
+    const dropZone = document.getElementById('dropZone');
+    const fileInput = document.getElementById('fileInput');
+
+    dropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      dropZone.classList.add('dragover');
+    });
+
+    dropZone.addEventListener('dragleave', () => {
+      dropZone.classList.remove('dragover');
+    });
+
+    dropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      dropZone.classList.remove('dragover');
+      const file = e.dataTransfer.files[0];
+      if (file) handleFile(file);
+    });
+
+    dropZone.addEventListener('click', (e) => {
+      if (e.target.tagName === 'BUTTON') return;
+      fileInput.click();
+    });
+
+    fileInput.addEventListener('change', () => {
+      if (fileInput.files[0]) handleFile(fileInput.files[0]);
+    });
+
+    // ---------------------------------------------------------------------------
+    // handleFile
+    // ---------------------------------------------------------------------------
+    async function handleFile(file) {
+      if (!file.name.toLowerCase().endsWith('.pdf')) {
+        alert('Please select a PDF file.');
+        return;
+      }
+
+      setStatus('Uploading…');
+
+      const formData = new FormData();
+      formData.append('file', file);
+
+      let jobId;
+      try {
+        const resp = await fetch('/api/analyze', { method: 'POST', body: formData });
+        if (!resp.ok) {
+          const err = await resp.json().catch(() => ({ detail: 'Upload failed' }));
+          throw new Error(err.detail || 'Upload failed');
+        }
+        const data = await resp.json();
+        jobId = data.job_id;
+      } catch (err) {
+        alert('Upload error: ' + err.message);
+        hideStatus();
+        return;
+      }
+
+      currentJobId = jobId;
+
+      // Show progress area
+      document.getElementById('progressArea').style.display = 'block';
+      document.getElementById('progressLog').innerHTML = '';
+      setStatus('Processing…');
+
+      listenForStatus(jobId);
+    }
+
+    // ---------------------------------------------------------------------------
+    // SSE status stream
+    // ---------------------------------------------------------------------------
+    function listenForStatus(jobId) {
+      const source = new EventSource('/api/status/' + jobId);
+
+      source.onmessage = (e) => {
+        const data = JSON.parse(e.data);
+
+        if (data.type === 'progress') {
+          appendLog(data.message);
+          return;
+        }
+
+        if (data.type === 'done') {
+          source.close();
+
+          if (data.status === 'complete') {
+            hideStatus();
+            showResult(data.result);
+          } else {
+            hideStatus();
+            alert('Processing failed. Check the progress log for details.');
+          }
+        }
+      };
+
+      source.onerror = () => {
+        source.close();
+        hideStatus();
+        appendLog('Connection lost. Please refresh and try again.');
+      };
+    }
+
+    // ---------------------------------------------------------------------------
+    // appendLog
+    // ---------------------------------------------------------------------------
+    function appendLog(message) {
+      const log = document.getElementById('progressLog');
+      const line = document.createElement('div');
+      line.className = 'log-line';
+      line.textContent = message;
+      log.appendChild(line);
+      log.scrollTop = log.scrollHeight;
+    }
+
+    // ---------------------------------------------------------------------------
+    // showResult
+    // ---------------------------------------------------------------------------
+    function showResult(result) {
+      currentResult = result;
+
+      // Score
+      document.getElementById('scoreNumber').textContent = result.risk_score ?? '—';
+
+      // Verdict badge
+      const verdict = result.verdict || 'UNKNOWN';
+      const badge = document.getElementById('verdictBadge');
+      badge.textContent = verdict;
+      badge.className = 'verdict-badge verdict-' + verdict;
+
+      // Info cells
+      document.getElementById('infoApplicant').textContent =
+        result.applicant?.name || 'N/A';
+      document.getElementById('infoEmployee').textContent =
+        result.employee?.name || 'N/A';
+
+      const balance = result.applicant?.total_balance;
+      document.getElementById('infoBalance').textContent =
+        balance != null ? balance.toLocaleString() + ' VND' : 'N/A';
+
+      document.getElementById('infoPages').textContent =
+        result.pages_analyzed ?? '—';
+
+      // Findings
+      const findingsList = document.getElementById('findingsList');
+      const findings = result.findings || [];
+      if (findings.length === 0) {
+        findingsList.innerHTML = '<p style="color:#555;font-size:0.85rem;">No findings.</p>';
+      } else {
+        findingsList.innerHTML = findings.map((f) => `
+          <div class="finding-card ${f.severity}">
+            <div class="finding-title">
+              <span class="finding-severity ${f.severity}">[${f.severity}]</span>
+              ${escapeHtml(f.rule_name)}
+            </div>
+            <div class="finding-desc">${escapeHtml(f.description)}</div>
+          </div>
+        `).join('');
+      }
+
+      // Graph iframe
+      const graphFrame = document.getElementById('graphFrame');
+      const graphUnavailable = document.getElementById('graphUnavailable');
+      if (currentJobId) {
+        graphFrame.src = '/api/graph/' + currentJobId;
+        graphFrame.classList.remove('hidden');
+        graphUnavailable.classList.add('hidden');
+        // If the graph fails to load, fall back to unavailable message
+        graphFrame.onerror = () => {
+          graphFrame.classList.add('hidden');
+          graphUnavailable.classList.remove('hidden');
+        };
+      }
+
+      // Show result area
+      document.getElementById('resultArea').style.display = 'block';
+      document.getElementById('resultArea').scrollIntoView({ behavior: 'smooth' });
+    }
+
+    // ---------------------------------------------------------------------------
+    // downloadJSON
+    // ---------------------------------------------------------------------------
+    function downloadJSON() {
+      if (!currentResult) return;
+      const blob = new Blob([JSON.stringify(currentResult, null, 2)], { type: 'application/json' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = (currentResult.loan_reference || 'assessment') + '.json';
+      a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    // Download report button — links to the markdown file via job path
+    document.getElementById('downloadReportBtn').addEventListener('click', () => {
+      if (!currentJobId) return;
+      // The markdown is served from the filesystem; open JSON as fallback
+      downloadJSON();
+    });
+
+    // ---------------------------------------------------------------------------
+    // resetUI
+    // ---------------------------------------------------------------------------
+    function resetUI() {
+      currentResult = null;
+      currentJobId = null;
+      fileInput.value = '';
+
+      document.getElementById('progressArea').style.display = 'none';
+      document.getElementById('progressLog').innerHTML = '';
+      document.getElementById('resultArea').style.display = 'none';
+
+      const graphFrame = document.getElementById('graphFrame');
+      graphFrame.src = '';
+      graphFrame.classList.add('hidden');
+      document.getElementById('graphUnavailable').classList.remove('hidden');
+
+      hideStatus();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // ---------------------------------------------------------------------------
+    // Status helpers
+    // ---------------------------------------------------------------------------
+    function setStatus(text) {
+      const indicator = document.getElementById('statusIndicator');
+      document.getElementById('statusText').textContent = text;
+      indicator.style.display = 'block';
+    }
+
+    function hideStatus() {
+      document.getElementById('statusIndicator').style.display = 'none';
+    }
+
+    // ---------------------------------------------------------------------------
+    // escapeHtml
+    // ---------------------------------------------------------------------------
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;');
+    }
+  </script>
+</body>
+</html>
