@@ -13,6 +13,8 @@ from pipeline.models import FraudAssessment
 from pipeline.report import generate_json_report, generate_markdown_report
 from pipeline.rules import evaluate_all_rules
 from pipeline.score import compute_score
+from pipeline.learn import run_drea_cycle
+from pipeline.evaluate import compute_neo_score
 from pipeline.vision import ClaudeVision, GeminiVision
 
 # ---------------------------------------------------------------------------
@@ -140,7 +142,33 @@ async def process_single(
         # Save graph
         save_graph(assessment, result_dir)
 
+    # DREA learning loop — runs after every assessment
+    workspace = _find_workspace()
+    if workspace:
+        if verbose:
+            print("  Running DREA learning cycle...")
+        drea_result = run_drea_cycle(workspace, assessment)
+        if verbose:
+            print(f"  DREA: {drea_result['signals_count']} signals, {drea_result['observations_count']} observations, {drea_result['proposals_count']} proposals")
+
+        # Compute and display neo_score
+        neo_scores = compute_neo_score(workspace / "ontology")
+        if verbose:
+            print(f"  Neo Score: {neo_scores['neo_score']:.2f} (det={neo_scores['detection']:.0f} struct={neo_scores['structural']:.0f} cov={neo_scores['coverage']:.0f} coh={neo_scores['coherence']:.0f})")
+
     return assessment
+
+
+def _find_workspace() -> Path | None:
+    """Find the nearest workspace directory."""
+    candidates = [
+        Path("workspaces/finance-and-banking"),
+        Path.cwd() / "workspaces" / "finance-and-banking",
+    ]
+    for c in candidates:
+        if c.exists() and (c / "ontology").exists():
+            return c
+    return None
 
 
 # ---------------------------------------------------------------------------
@@ -179,6 +207,18 @@ def main() -> None:
         "-v",
         action="store_true",
         help="Show per-page extraction progress",
+    )
+    parser.add_argument(
+        "--iterate",
+        action="store_true",
+        help="Run autoresearch iteration loop after assessment",
+    )
+    parser.add_argument(
+        "--max-iterations",
+        "-n",
+        type=int,
+        default=5,
+        help="Max iterations for autoresearch loop (default: 5)",
     )
 
     args = parser.parse_args()
@@ -232,6 +272,33 @@ def main() -> None:
         print_summary(assessment)
         result_dir = output_dir / assessment.loan_reference
         print(f"\nSaved to: {result_dir}")
+
+    # Run autoresearch iteration loop if requested
+    if args.iterate:
+        from pipeline.iterate import run_iteration_loop
+        workspace = _find_workspace()
+        if not workspace:
+            print("Error: No workspace found for iteration loop", file=sys.stderr)
+            sys.exit(1)
+
+        def on_iter_progress(msg: str):
+            print(f"[neo-iterate] {msg}")
+
+        print(f"\n{'━' * 40}")
+        print("Starting autoresearch iteration loop...")
+        print(f"{'━' * 40}")
+
+        results = run_iteration_loop(
+            workspace=workspace,
+            max_iterations=args.max_iterations,
+            on_progress=on_iter_progress,
+        )
+
+        kept = sum(1 for r in results if r["status"] == "kept")
+        reverted = sum(1 for r in results if r["status"] == "reverted")
+        final_score = results[-1]["neo_score"] if results else "N/A"
+        print(f"\nIteration complete: {len(results)} iterations, {kept} kept, {reverted} reverted")
+        print(f"Final neo_score: {final_score}")
 
 
 if __name__ == "__main__":
