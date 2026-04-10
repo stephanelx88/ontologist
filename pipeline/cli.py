@@ -83,14 +83,20 @@ async def process_single(
 ) -> FraudAssessment:
     """Extract, evaluate, score, and save a single PDF loan package."""
     gemini_key = os.environ.get("GEMINI_API_KEY")
-    if not gemini_key:
-        print("Error: GEMINI_API_KEY environment variable is not set.", file=sys.stderr)
-        sys.exit(1)
-
     anthropic_key = os.environ.get("ANTHROPIC_API_KEY")
 
-    primary = GeminiVision(api_key=gemini_key)
-    fallback = ClaudeVision(api_key=anthropic_key) if anthropic_key else None
+    if not gemini_key and not anthropic_key:
+        print("Error: Set GEMINI_API_KEY or ANTHROPIC_API_KEY environment variable.", file=sys.stderr)
+        sys.exit(1)
+
+    if gemini_key:
+        primary = GeminiVision(api_key=gemini_key)
+        fallback = ClaudeVision(api_key=anthropic_key) if anthropic_key else None
+        extraction_label = "gemini" if not fallback else "gemini+claude"
+    else:
+        primary = ClaudeVision(api_key=anthropic_key)
+        fallback = None
+        extraction_label = "claude"
 
     def on_progress(message: str) -> None:
         if verbose:
@@ -107,7 +113,7 @@ async def process_single(
     risk_score, verdict = compute_score(findings)
 
     timestamp = datetime.now(timezone.utc).isoformat()
-    extraction_provider = "gemini" if not fallback else "gemini+claude"
+    extraction_provider = extraction_label
 
     assessment = FraudAssessment(
         loan_reference=package.loan_reference,
@@ -176,11 +182,6 @@ def main() -> None:
     )
 
     args = parser.parse_args()
-
-    gemini_key = os.environ.get("GEMINI_API_KEY")
-    if not gemini_key:
-        print("Error: GEMINI_API_KEY environment variable is not set.", file=sys.stderr)
-        sys.exit(1)
 
     input_path = Path(args.input)
     output_dir = Path(args.output_dir)

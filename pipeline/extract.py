@@ -69,8 +69,8 @@ def extract_loan_reference(filename: str) -> str:
 
 async def extract_package(
     pdf_path: Path,
-    primary: GeminiVision,
-    fallback: Optional[ClaudeVision],
+    primary: GeminiVision | ClaudeVision,
+    fallback: GeminiVision | ClaudeVision | None,
     confidence_threshold: float = 0.7,
     on_progress: Optional[Callable[[str], None]] = None,
 ) -> PackageData:

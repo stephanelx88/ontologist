@@ -5,9 +5,18 @@ import json
 import re
 from typing import Optional
 
-import anthropic
-import google.genai as genai
-from google.genai import types as genai_types
+try:
+    import google.genai as genai
+    from google.genai import types as genai_types
+    HAS_GEMINI = True
+except ImportError:
+    HAS_GEMINI = False
+
+try:
+    import anthropic
+    HAS_ANTHROPIC = True
+except ImportError:
+    HAS_ANTHROPIC = False
 
 from pipeline.models import AccountData, BadgeData, PageData, TransactionData
 
@@ -249,8 +258,8 @@ class ClaudeVision:
 async def extract_with_fallback(
     image_bytes: bytes,
     page_number: int,
-    primary: GeminiVision,
-    fallback: ClaudeVision | None,
+    primary: GeminiVision | ClaudeVision,
+    fallback: GeminiVision | ClaudeVision | None,
     threshold: float = 0.7,
 ) -> PageData:
     """Try primary provider; use fallback if confidence is below threshold.
