@@ -1,130 +1,96 @@
-# Fraud detection rules for Vietnamese bank statement verification
-# Knowledge type: proprietary (derived from MBBank app screenshots in VPBank loan verification packages)
-
 rules:
+- id: name-mismatch-check
+  name: Account holder name vs applicant name mismatch
+  description: 'The name shown in the bank app (TGTT label) must match the applicant
+    on the loan application. Package 2 shows "TGTT NGUYEN BICH HANH" but loan is processed
+    by employee alongside their badge — the applicant name on the form may differ.
 
-  # === Identity Consistency Rules ===
+    '
+  condition: bank_account.holder_name != applicant.full_name
+  action: flag_identity_mismatch
+  severity: critical
+  source: Package 2 — account shows NGUYEN BICH HANH
+  domain: identity
+- id: badge-present-check
+  name: Employee badge must be visible in all verification photos
+  description: 'Every verification photo must show the VPBank employee badge. Missing
+    badge breaks the chain of evidence.
 
-  - id: name-mismatch-check
-    name: Account holder name vs applicant name mismatch
-    description: >
-      The name shown in the bank app (TGTT label) must match the applicant
-      on the loan application. Package 2 shows "TGTT NGUYEN BICH HANH" but
-      loan is processed by employee alongside their badge — the applicant
-      name on the form may differ.
-    condition: "bank_account.holder_name != applicant.full_name"
-    action: flag_identity_mismatch
-    severity: critical
-    source: "Package 2 — account shows NGUYEN BICH HANH"
-    domain: identity
+    '
+  condition: verification_photo.badge_visible == false
+  action: flag_missing_badge
+  severity: critical
+  source: Standard across both packages — badge in every frame
+  domain: procedure
+- id: employee-consistency-check
+  name: Same employee badge across all photos in package
+  description: 'All verification photos in one package must show the same employee
+    badge. Different badges suggest photos from different sessions spliced together.
 
-  - id: badge-present-check
-    name: Employee badge must be visible in all verification photos
-    description: >
-      Every verification photo must show the VPBank employee badge.
-      Missing badge breaks the chain of evidence.
-    condition: "verification_photo.badge_visible == false"
-    action: flag_missing_badge
-    severity: critical
-    source: "Standard across both packages — badge in every frame"
-    domain: procedure
+    '
+  condition: count(distinct(verification_session.photos -> vpbank_employee.employee_id))
+    > 1
+  action: flag_badge_inconsistency
+  severity: critical
+  source: Both packages show consistent single badge throughout
+  domain: procedure
+- id: balance-consistency-check
+  name: Balance shown in list must match detail view
+  description: 'The balance on the account list screen must equal the balance on the
+    account detail screen. Discrepancy suggests screenshot manipulation.
 
-  - id: employee-consistency-check
-    name: Same employee badge across all photos in package
-    description: >
-      All verification photos in one package must show the same employee badge.
-      Different badges suggest photos from different sessions spliced together.
-    condition: "count(distinct(verification_session.photos -> vpbank_employee.employee_id)) > 1"
-    action: flag_badge_inconsistency
-    severity: critical
-    source: "Both packages show consistent single badge throughout"
-    domain: procedure
+    '
+  condition: verification_photo[screen_type='account_list'].shown_balance != verification_photo[screen_type='account_detail'].shown_balance
+  action: flag_balance_inconsistency
+  severity: critical
+  source: 'Package 1: 78,129,696 matches in list and detail. Package 2: 39,277,860
+    matches.'
+  domain: balance
+- id: salary-regularity-check
+  name: Salary transactions should show regular pattern
+  description: 'Salary deposits should arrive on consistent dates with consistent
+    amounts (±20% variation acceptable for bonuses). Irregular patterns may indicate
+    fabricated transactions.
 
-  # === Balance & Transaction Rules ===
+    '
+  condition: salary_transactions.date_variance > 10_days OR salary_transactions.amount_variance
+    > 0.5
+  action: flag_irregular_salary
+  severity: warning
+  source: Package 2 shows two salary deposits on same date (02/01/2025) — catch-up
+    pattern
+  domain: income
+- id: salary-description-format
+  name: Salary description must contain standard keywords
+  description: 'Vietnamese salary transfers typically contain "luong", "lương", "CUSTOMER
+    Luong", or "thanh toán lương" in the description. Missing keywords with round-number
+    amounts may indicate staged transfers.
 
-  - id: balance-consistency-check
-    name: Balance shown in list must match detail view
-    description: >
-      The balance on the account list screen must equal the balance on the
-      account detail screen. Discrepancy suggests screenshot manipulation.
-    condition: "verification_photo[screen_type='account_list'].shown_balance != verification_photo[screen_type='account_detail'].shown_balance"
-    action: flag_balance_inconsistency
-    severity: critical
-    source: "Package 1: 78,129,696 matches in list and detail. Package 2: 39,277,860 matches."
-    domain: balance
+    '
+  condition: transaction.type == 'salary' AND NOT contains(transaction.description,
+    ['luong', 'lương', 'Luong'])
+  action: flag_suspicious_salary_label
+  severity: warning
+  source: Both packages — salary descriptions contain 'luong'/'lương' keywords
+  domain: income
+- id: photo-timestamp-sequence
+  name: Photo timestamps must be sequential
+  description: 'Verification photos should have sequential timestamps within a short
+    window (typically < 10 minutes). Large gaps or out-of-order timestamps suggest
+    photo manipulation or staged sessions.
 
-  - id: salary-regularity-check
-    name: Salary transactions should show regular pattern
-    description: >
-      Salary deposits should arrive on consistent dates with consistent
-      amounts (±20% variation acceptable for bonuses). Irregular patterns
-      may indicate fabricated transactions.
-    condition: "salary_transactions.date_variance > 10_days OR salary_transactions.amount_variance > 0.5"
-    action: flag_irregular_salary
-    severity: warning
-    source: "Package 2 shows two salary deposits on same date (02/01/2025) — catch-up pattern"
-    domain: income
-
-  - id: salary-description-format
-    name: Salary description must contain standard keywords
-    description: >
-      Vietnamese salary transfers typically contain "luong", "lương",
-      "CUSTOMER Luong", or "thanh toán lương" in the description. Missing
-      keywords with round-number amounts may indicate staged transfers.
-    condition: "transaction.type == 'salary' AND NOT contains(transaction.description, ['luong', 'lương', 'Luong'])"
-    action: flag_suspicious_salary_label
-    severity: warning
-    source: "Both packages — salary descriptions contain 'luong'/'lương' keywords"
-    domain: income
-
-  # === Temporal Rules ===
-
-  - id: photo-timestamp-sequence
-    name: Photo timestamps must be sequential
-    description: >
-      Verification photos should have sequential timestamps within a short
-      window (typically < 10 minutes). Large gaps or out-of-order timestamps
-      suggest photo manipulation or staged sessions.
-    condition: "max(photo_timestamps) - min(photo_timestamps) > 10_minutes"
-    action: flag_timestamp_anomaly
-    severity: warning
-    source: "Package 2: 18:03:45 to 18:06:08 (2m23s) — normal. Package 1: no metadata."
-    domain: temporal
-
-  - id: screenshot-date-vs-photo-date
-    name: App date range must be plausible relative to photo date
-    description: >
-      The transaction query date range shown in the app should be recent
-      relative to when the photo was taken. Showing old screenshots suggests
-      reuse from a previous application.
-    condition: "photo_date - transaction_query_end_date > 30_days"
-    action: flag_stale_screenshot
-    severity: warning
-    source: "Package 2: photo 7 Jan, query range 01/01-07/01 — same day. Consistent."
-    domain: temporal
-
-  # === Amount Rules ===
-
-  - id: round-number-deposit
-    name: Suspiciously round deposit amounts
-    description: >
-      Salary amounts that are perfectly round (e.g., exactly 5,000,000 or
-      10,000,000) may indicate staged deposits. Real salaries typically
-      have non-round amounts after tax/insurance deductions.
-    condition: "salary_transaction.amount % 1_000_000 == 0 AND salary_transaction.amount > 0"
-    action: flag_round_salary
-    severity: info
-    source: "Package 2: 5,000,000 VND (round) and 11,000,000 VND (round) — both perfectly round"
-    domain: income
-    note: "High false positive rate — some employers do pay round amounts. Use as supporting signal only."
-
-  - id: balance-vs-salary-ratio
-    name: Balance to salary ratio check
-    description: >
-      If the account balance is very high relative to demonstrated salary,
-      the balance may have been temporarily inflated for the verification.
-    condition: "bank_account.balance > income_profile.average_monthly_salary * 6"
-    action: flag_inflated_balance
-    severity: info
-    source: "Package 1: balance 78M vs salary 10M (7.8x) — slightly elevated but within range"
-    domain: balance
+    '
+  condition: max(photo_timestamps) - min(photo_timestamps) > 10_minutes
+  action: flag_timestamp_anomaly
+  severity: warning
+  source: 'Package 2: 18:03:45 to 18:06:08 (2m23s) — normal. Package 1: no metadata.'
+  domain: temporal
+- id: screenshot-date-vs-photo-date
+  name: Screenshot freshness check
+  description: The transaction query date range shown in the app should be recent
+    relative to the photo date. Stale screenshots suggest reuse from a previous application.
+  condition: photo_date - transaction_query_end_date > 30_days
+  action: flag_stale_screenshot
+  severity: warning
+  source: Auto-generated by Neo iteration loop
+  domain: temporal
