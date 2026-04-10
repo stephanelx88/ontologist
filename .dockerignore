@@ -1,0 +1,10 @@
+.git
+__pycache__
+*.pyc
+results/
+web-results/
+bank-statements/
+*.pdf
+.env
+.DS_Store
+graphify-out/
