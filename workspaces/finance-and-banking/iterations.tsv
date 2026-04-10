@@ -1,15 +1,1 @@
-iteration	commit	neo_score	ppt	structural	coverage	coherence	loc	status	description
-0	3b37ee9	100.0	100.0	100.0	100.0	100.0	baseline	Initial ontology state
-1	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-2	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-3	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-4	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-5	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-6	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-7	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-8	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-9	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-10	skipped	88.0	70.0	100.0	100.0	100.0	skipped	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-11	800024f	92.0	80.0	100.0	100.0	100.0	kept	Add rule 'screenshot-date-vs-photo-date' to detect: Screenshots from old date reused for new application
-12	7f91096	96.0	90.0	100.0	100.0	100.0	kept	Add rule 'round-number-deposit' to detect: Salary is suspiciously round (exact millions)
-13	707f806	100.0	100.0	100.0	100.0	100.0	kept	Add rule 'balance-vs-salary-ratio' to detect: Balance much higher than demonstrated salary
+

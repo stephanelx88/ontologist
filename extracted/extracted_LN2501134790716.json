@@ -1,0 +1,132 @@
+{
+  "loan_reference": "LN2501134790716",
+  "pages": [
+    {
+      "page_number": 1,
+      "screen_type": "home",
+      "confidence": 0.90,
+      "badge": {"name": "Nguyễn Tuyết Mai", "employee_id": "47223", "visible": true, "confidence": 0.95},
+      "accounts": [],
+      "transactions": [],
+      "device": {"type": "samsung", "model": "Samsung Galaxy (punch-hole camera, no home button)"},
+      "photo_metadata": {"timestamp": "2025-01-07T18:03:45", "location": "Hà Nội", "has_metadata": true},
+      "background_document": {"visible": false, "type": null}
+    },
+    {
+      "page_number": 2,
+      "screen_type": "account_list",
+      "confidence": 0.93,
+      "badge": {"name": "Nguyễn Tuyết Mai", "employee_id": "47223", "visible": true, "confidence": 0.95},
+      "accounts": [
+        {"number": "0600100790006", "holder_name": "NGUYEN BICH HANH", "balance": 39277860, "currency": "VND", "type": "payment", "is_default": true},
+        {"number": "0989559269", "holder_name": null, "balance": 9397, "currency": "VND", "type": "payment", "is_default": false},
+        {"number": "2065796126293", "holder_name": null, "balance": 0, "currency": "VND", "type": "overdraft", "is_default": false}
+      ],
+      "transactions": [],
+      "device": {"type": "samsung", "model": "Samsung Galaxy"},
+      "photo_metadata": {"timestamp": "2025-01-07T18:03:56", "location": "Hà Nội", "has_metadata": true},
+      "background_document": {"visible": false, "type": null}
+    },
+    {
+      "page_number": 3,
+      "screen_type": "account_detail",
+      "confidence": 0.95,
+      "badge": {"name": "Nguyễn Tuyết Mai", "employee_id": "47223", "visible": true, "confidence": 0.95},
+      "accounts": [
+        {"number": "0600100790006", "holder_name": "NGUYEN BICH HANH", "balance": 39277860, "currency": "VND", "type": "payment", "is_default": true}
+      ],
+      "transactions": [],
+      "device": {"type": "samsung", "model": "Samsung Galaxy"},
+      "photo_metadata": {"timestamp": "2025-01-07T18:04:11", "location": "Hà Nội", "has_metadata": true},
+      "background_document": {"visible": false, "type": null}
+    },
+    {
+      "page_number": 4,
+      "screen_type": "transaction_detail",
+      "confidence": 0.93,
+      "badge": {"name": "Nguyễn Tuyết Mai", "employee_id": "47223", "visible": true, "confidence": 0.95},
+      "accounts": [
+        {"number": "0600100790006", "holder_name": "NGUYEN BICH HANH", "balance": 39277860, "currency": "VND", "type": "payment", "is_default": true}
+      ],
+      "transactions": [
+        {"amount": 5000000, "direction": "incoming", "counterparty": "CUSTOMER", "description": "CUSTOMER Luong thang 11 24 FT25002680453923", "timestamp": "2025-01-02T14:14:39", "reference": "FT2500251955108", "is_salary": true}
+      ],
+      "device": {"type": "samsung", "model": "Samsung Galaxy"},
+      "photo_metadata": {"timestamp": "2025-01-07T18:05:34", "location": "Hà Nội", "has_metadata": true},
+      "background_document": {"visible": false, "type": null}
+    },
+    {
+      "page_number": 5,
+      "screen_type": "transaction_detail",
+      "confidence": 0.93,
+      "badge": {"name": "Nguyễn Tuyết Mai", "employee_id": "47223", "visible": true, "confidence": 0.95},
+      "accounts": [
+        {"number": "0600100790006", "holder_name": "NGUYEN BICH HANH", "balance": 39277860, "currency": "VND", "type": "payment", "is_default": true}
+      ],
+      "transactions": [
+        {"amount": 11000000, "direction": "incoming", "counterparty": "CUSTOMER", "description": "CUSTOMER luong t12.24 vo thuong tet duong li ch FT2500253062166", "timestamp": "2025-01-02T12:59:14", "reference": "FT2500202200892", "is_salary": true}
+      ],
+      "device": {"type": "samsung", "model": "Samsung Galaxy"},
+      "photo_metadata": {"timestamp": "2025-01-07T18:06:08", "location": "Hà Nội", "has_metadata": true},
+      "background_document": {"visible": false, "type": null}
+    },
+    {
+      "page_number": 6,
+      "screen_type": "transaction_detail",
+      "confidence": 0.90,
+      "badge": {"name": "Nguyễn Tuyết Mai", "employee_id": "47223", "visible": true, "confidence": 0.95},
+      "accounts": [
+        {"number": "0600100790006", "holder_name": "NGUYEN BICH HANH", "balance": 39277860, "currency": "VND", "type": "payment", "is_default": true}
+      ],
+      "transactions": [
+        {"amount": 5000000, "direction": "incoming", "counterparty": "CUSTOMER", "description": "CUSTOMER Luong t11.24 FT2435827004634", "timestamp": "2024-12-01T07:03:13", "reference": "FT2435827004634", "is_salary": true}
+      ],
+      "device": {"type": "samsung", "model": "Samsung Galaxy"},
+      "photo_metadata": {"timestamp": "2025-01-07T18:08:14", "location": "Hà Nội", "has_metadata": true},
+      "background_document": {"visible": false, "type": null}
+    },
+    {
+      "page_number": 7,
+      "screen_type": "transaction_detail",
+      "confidence": 0.90,
+      "badge": {"name": "Nguyễn Tuyết Mai", "employee_id": "47223", "visible": true, "confidence": 0.95},
+      "accounts": [
+        {"number": "0600100790006", "holder_name": "NGUYEN BICH HANH", "balance": 39277860, "currency": "VND", "type": "payment", "is_default": true}
+      ],
+      "transactions": [
+        {"amount": 5000000, "direction": "incoming", "counterparty": "CUSTOMER", "description": "CUSTOMER Thanh toan luong thang 10 24 FT2432... 4930216012", "timestamp": "2024-11-19T17:17:35", "reference": "FT2424360109763", "is_salary": true}
+      ],
+      "device": {"type": "samsung", "model": "Samsung Galaxy"},
+      "photo_metadata": {"timestamp": "2025-01-07T18:08:43", "location": "Hà Nội", "has_metadata": true},
+      "background_document": {"visible": false, "type": null}
+    },
+    {
+      "page_number": 8,
+      "screen_type": "transaction_detail",
+      "confidence": 0.88,
+      "badge": {"name": "Nguyễn Tuyết Mai", "employee_id": "47223", "visible": true, "confidence": 0.95},
+      "accounts": [
+        {"number": "0600100790006", "holder_name": "NGUYEN BICH HANH", "balance": 39277860, "currency": "VND", "type": "payment", "is_default": true}
+      ],
+      "transactions": [
+        {"amount": 5000000, "direction": "incoming", "counterparty": "CUSTOMER Phan Thi THANH HUONG", "description": "CUSTOMER Phan Thi THANH HUONG chuyen tam ung luong t10.24 FT2428976441173", "timestamp": "2024-10-15T15:39:02", "reference": "FT2428976441173", "is_salary": true}
+      ],
+      "device": {"type": "samsung", "model": "Samsung Galaxy"},
+      "photo_metadata": {"timestamp": "2025-01-07T18:09:22", "location": "Hà Nội", "has_metadata": true},
+      "background_document": {"visible": false, "type": null}
+    },
+    {
+      "page_number": 9,
+      "screen_type": "qr",
+      "confidence": 0.92,
+      "badge": {"name": "Nguyễn Tuyết Mai", "employee_id": "47223", "visible": true, "confidence": 0.95},
+      "accounts": [
+        {"number": "0600100790006", "holder_name": "NGUYEN BICH HANH", "balance": 39277860, "currency": "VND", "type": "payment", "is_default": true}
+      ],
+      "transactions": [],
+      "device": {"type": "samsung", "model": "Samsung Galaxy"},
+      "photo_metadata": {"timestamp": "2025-01-07T18:14:08", "location": "Hà Nội", "has_metadata": true},
+      "background_document": {"visible": false, "type": null}
+    }
+  ]
+}

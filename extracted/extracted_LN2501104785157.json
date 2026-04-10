@@ -1,0 +1,115 @@
+{
+  "loan_reference": "LN2501104785157",
+  "pages": [
+    {
+      "page_number": 1,
+      "screen_type": "home",
+      "confidence": 0.9,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.95},
+      "accounts": [],
+      "transactions": [],
+      "device": {"type": "iphone", "model": "iPhone SE (older, home button)"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    },
+    {
+      "page_number": 2,
+      "screen_type": "qr",
+      "confidence": 0.9,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.95},
+      "accounts": [{"number": "2020108285007", "holder_name": "LE THI PHUONG", "balance": 78129696, "currency": "VND", "type": "payment", "is_default": true}],
+      "transactions": [],
+      "device": {"type": "iphone", "model": "iPhone SE"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    },
+    {
+      "page_number": 3,
+      "screen_type": "account_list",
+      "confidence": 0.95,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.95},
+      "accounts": [{"number": "2020108285007", "holder_name": "LE THI PHUONG", "balance": 78129696, "currency": "VND", "type": "payment", "is_default": true}],
+      "transactions": [],
+      "device": {"type": "iphone", "model": "iPhone SE"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    },
+    {
+      "page_number": 4,
+      "screen_type": "account_detail",
+      "confidence": 0.95,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.95},
+      "accounts": [{"number": "2020108285007", "holder_name": "LE THI PHUONG", "balance": 78129696, "currency": "VND", "type": "payment", "is_default": true}],
+      "transactions": [],
+      "device": {"type": "iphone", "model": "iPhone SE"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    },
+    {
+      "page_number": 5,
+      "screen_type": "transaction_detail",
+      "confidence": 0.92,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.95},
+      "accounts": [],
+      "transactions": [{"amount": 10184345, "direction": "incoming", "counterparty": "28 HUNG PHU JOINT FUND COMPANY", "description": "Thanh toán lương kỳ 1 tháng 01 năm 2025", "timestamp": null, "reference": "T54544W919Y010059", "is_salary": true}],
+      "device": {"type": "iphone", "model": "iPhone SE"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    },
+    {
+      "page_number": 6,
+      "screen_type": "transaction_detail",
+      "confidence": 0.85,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.95},
+      "accounts": [],
+      "transactions": [{"amount": 8278453, "direction": "incoming", "counterparty": null, "description": "Chuyển khoản đến", "timestamp": null, "reference": null, "is_salary": false}],
+      "device": {"type": "iphone", "model": "iPhone SE"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    },
+    {
+      "page_number": 7,
+      "screen_type": "transaction_detail",
+      "confidence": 0.85,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.95},
+      "accounts": [],
+      "transactions": [{"amount": 7166272, "direction": "incoming", "counterparty": null, "description": "Chuyển khoản đến", "timestamp": null, "reference": null, "is_salary": false}],
+      "device": {"type": "iphone", "model": "iPhone SE"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    },
+    {
+      "page_number": 8,
+      "screen_type": "transaction_detail",
+      "confidence": 0.82,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.95},
+      "accounts": [],
+      "transactions": [{"amount": 13541477, "direction": "incoming", "counterparty": null, "description": "Chuyển khoản đến", "timestamp": null, "reference": null, "is_salary": false}],
+      "device": {"type": "iphone", "model": "iPhone SE"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    },
+    {
+      "page_number": 9,
+      "screen_type": "transaction_detail",
+      "confidence": 0.80,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.90},
+      "accounts": [],
+      "transactions": [{"amount": 7895282, "direction": "incoming", "counterparty": null, "description": "Chuyển khoản đến", "timestamp": null, "reference": null, "is_salary": false}],
+      "device": {"type": "iphone", "model": "iPhone SE"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    },
+    {
+      "page_number": 10,
+      "screen_type": "transaction_detail",
+      "confidence": 0.80,
+      "badge": {"name": "Doãn Thùy Hằng", "employee_id": "42589", "visible": true, "confidence": 0.90},
+      "accounts": [],
+      "transactions": [{"amount": 8107077, "direction": "incoming", "counterparty": null, "description": "Chuyển khoản đến", "timestamp": null, "reference": null, "is_salary": false}],
+      "device": {"type": "iphone", "model": "iPhone SE"},
+      "photo_metadata": {"timestamp": null, "location": null, "has_metadata": false},
+      "background_document": {"visible": true, "type": "vpbank_application_form"}
+    }
+  ]
+}
