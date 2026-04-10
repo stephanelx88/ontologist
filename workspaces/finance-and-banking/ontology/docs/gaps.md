@@ -34,3 +34,10 @@
 - **What was missing:** The VPBank form in the background contains applicant personal details (CCCD, address, etc.) but is partially obscured. Full form extraction would enable cross-referencing form data vs app data.
 - **Priority:** LOW
 - **Status:** OPEN
+
+## Observation: Adjust balance-salary ratio threshold: all packages exceed 6
+- **Source:** Autoresearch iteration loop
+- **Evidence:** Ratios across packages: ['7.7x', '6.3x']
+- **Rule:** `balance-vs-salary-ratio`
+- **Timestamp:** 2026-04-10T03:53:41.910893+00:00
+- **Status:** PROPOSED
